@@ -9,14 +9,32 @@
 import Foundation
 import UIKit
 
-class ImageGalleryModel {
+struct ImageGalleryModel: Codable {
     
     var galleryTitle: String
-    var galleryContents: [(url: URL, aspectRatio: CGFloat)]
+    var galleryContents = [galleryContent]()
+    
+    struct galleryContent: Codable {
+        let url: URL
+        let aspectRatio: CGFloat
+    }
     
     init(title: String) {
         galleryTitle = title
         galleryContents = []
+    }
+    
+    // JSON encoder and decoder
+    init?(json: Data) {
+        if let newValue = try? JSONDecoder().decode(ImageGalleryModel.self, from: json) {
+            self = newValue
+        } else {
+            return nil
+        }
+    }
+    
+    var json: Data? {
+        return try? JSONEncoder().encode(self)
     }
     
 }

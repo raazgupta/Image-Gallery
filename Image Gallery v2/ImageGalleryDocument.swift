@@ -8,15 +8,21 @@
 
 import UIKit
 
-class Document: UIDocument {
+class ImageGalleryDocument: UIDocument {
+    
+    var imageGallery: ImageGalleryModel?
+    var thumbnail: UIImage?
     
     override func contents(forType typeName: String) throws -> Any {
         // Encode your document with an instance of NSData or NSFileWrapper
-        return Data()
+        return imageGallery?.json ?? Data()
     }
     
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
         // Load your document from contents
+        if let json = contents as? Data{
+            imageGallery = ImageGalleryModel(json: json)
+        }
     }
 }
 

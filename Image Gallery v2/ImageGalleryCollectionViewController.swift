@@ -12,6 +12,46 @@ private let reuseIdentifier = "Cell"
 
 class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate {
     
+    // Doing Document Browser View Controller things
+    
+    // Converting from JSON document to ImageGalleryModel
+    var document: ImageGalleryDocument?
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        document?.open { success in
+            if success {
+                self.imageGallery.galleryTitle = self.document?.localizedName ?? "Gallery"
+                self.imageGallery = self.document?.imageGallery ?? ImageGalleryModel(title: "Gallery")
+            }
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Refresh image cells after view has appeared
+        refreshImageCells()
+        
+    }
+    
+    @IBAction func save(_ sender: UIBarButtonItem? = nil) {
+        document?.imageGallery = imageGallery
+        if document?.imageGallery != nil {
+            document?.updateChangeCount(.done)
+        }
+    }
+    
+    @IBAction func close(_ sender: UIBarButtonItem) {
+        save()
+        dismiss(animated: true) {
+            self.document?.close()
+        }
+    }
+    
+    // Doing Collection View things
+    
     @IBOutlet weak var imageGalleryView: UICollectionView!
     
     //var imageUrlCollection: [(url: URL, aspectRatio: CGFloat)] = []
@@ -141,7 +181,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     
                     collectionView.performBatchUpdates({
                         imageGallery.galleryContents.remove(at: sourceIndexPath.item)
-                        imageGallery.galleryContents.insert(imageUrlCollectionItem, at: destinationIndexPath.item)
+                        imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: imageUrlCollectionItem.url, aspectRatio: imageUrlCollectionItem.aspectRatio), at: destinationIndexPath.item)
                         collectionView.deleteItems(at: [sourceIndexPath])
                         collectionView.insertItems(at: [destinationIndexPath])
                     })
@@ -161,7 +201,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                                 if let imageData = urlContents, url == provider as? URL {
                                     if let image = UIImage(data: imageData) {
                                         placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
-                                            self?.imageGallery.galleryContents.insert((url.imageURL,image.size.height/image.size.width), at: insertionIndexPath.item)
+                                            //(url.imageURL,image.size.height/image.size.width)
+                                            self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.imageURL, aspectRatio: image.size.height/image.size.width) , at: insertionIndexPath.item)
                                         })
                                     }
                                 }
@@ -194,8 +235,6 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     // Add new collection view cell and paste image in PasteBoard
     @IBAction func addPaste(_ sender: Any) {
-        //imageGallery.galleryContents.insert((URL(string: "http://www.clker.com/cliparts/3/m/v/Y/E/V/small-red-apple-md.png")!,1.0), at: 0)
-        //collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
         
         if UIPasteboard.general.hasURLs {
             if let url = UIPasteboard.general.url {
@@ -204,7 +243,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     DispatchQueue.main.async {
                         if let imageData = urlContents {
                             if let image = UIImage(data: imageData) {
-                                self?.imageGallery.galleryContents.insert((url,image.size.height/image.size.width), at: 0)
+                                //(url,image.size.height/image.size.width)
+                                self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url,aspectRatio: image.size.height/image.size.width), at: 0)
                                 self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
                             }
                         }
