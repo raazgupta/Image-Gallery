@@ -93,9 +93,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         // When the app goes to foreground, refresh cells as some cells were showing grey otherwise
         //NotificationCenter.default.addObserver(self, selector: #selector(refreshImageCells), name: UIApplication.willEnterForegroundNotification, object: nil)
         
+        
     }
     
     @objc func refreshImageCells() {
+        /*
         for cell in collectionView.visibleCells {
             if let imageCell = cell as? ImageGalleryCollectionViewCell {
                 if let indexPath = collectionView.indexPath(for: cell) {
@@ -104,6 +106,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 }
             }
         }
+        */
         collectionView.reloadData()
     }
 
@@ -239,6 +242,16 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         if UIPasteboard.general.hasURLs {
             if let url = UIPasteboard.general.url {
                 DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                    
+                    if let image = getImageFromURL(url: url) {
+                        DispatchQueue.main.async {
+                            self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url,aspectRatio: image.size.height/image.size.width), at: 0)
+                            self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
+                        }
+                    }
+                    
+                    
+                    /*
                     let urlContents = try? Data(contentsOf: url.imageURL)
                     DispatchQueue.main.async {
                         if let imageData = urlContents {
@@ -250,6 +263,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         }
                         
                     }
+                    */
                 }
             }
         }
@@ -265,6 +279,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             collectionView.deleteItems(at: [IndexPath(row: 0, section: 0)])
         }
     }
+
     
     
 }

@@ -235,3 +235,35 @@ extension UIDocument.State: CustomStringConvertible {
             ][rawValue] ?? String(rawValue)
     }
 }
+
+func getImageFromURL(url: URL) -> UIImage? {
+    
+    var image: UIImage?
+    
+    let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 60)
+    
+    let cacheResponse = URLCache.shared.cachedResponse(for: request)
+    
+    if cacheResponse == nil {
+        let config = URLSessionConfiguration.default
+        config.urlCache = URLCache.shared
+        config.urlCache = URLCache(memoryCapacity: 1000000, diskCapacity: 2000000, diskPath: "urlCache")
+        let session = URLSession(configuration: config)
+        
+        let task = session.dataTask(with: request) { (data, response, error) in
+            if let data = data, let response = response {
+                let cacheResponse = CachedURLResponse(response: response, data: data)
+                URLCache.shared.storeCachedResponse(cacheResponse, for: request)
+                image = UIImage(data: data)
+            }
+            
+        }
+        task.resume()
+        
+    } else {
+        image = UIImage(data: cacheResponse!.data)
+    }
+    
+    return image
+    
+}
