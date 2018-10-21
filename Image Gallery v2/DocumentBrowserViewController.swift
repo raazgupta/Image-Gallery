@@ -18,7 +18,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         
         delegate = self
         
-        allowsDocumentCreation = false
+        allowsDocumentCreation = true
         allowsPickingMultipleItems = false
         
         // Update the style of the UIDocumentBrowserViewController
@@ -29,7 +29,11 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         
         // Do any additional setup after loading the view, typically from a nib.
         
-        template = try? FileManager.default.url(for: .applicationDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("Untitled.json")
+        do {
+        template = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("Untitled.json")
+        } catch {
+            print(error)
+        }
         if template != nil {
             allowsDocumentCreation = FileManager.default.createFile(atPath: template!.path, contents: Data())
             
@@ -41,7 +45,6 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: UIDocumentBrowserViewControllerDelegate
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
-        
         importHandler(template,.copy)
         
     }
