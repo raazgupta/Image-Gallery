@@ -36,7 +36,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         
     }
     
-    @IBAction func save(_ sender: UIBarButtonItem? = nil) {
+    @IBAction func save() {
         document?.imageGallery = imageGallery
         if document?.imageGallery != nil {
             document?.updateChangeCount(.done)
@@ -84,6 +84,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         // Do any additional setup after loading the view.
         collectionView?.dragDelegate = self
         collectionView?.dropDelegate = self
+        
+        // Enble dragging on iphone
+        collectionView?.dragInteractionEnabled = true
+        
         
         //imageCellWidth = (collectionView?.bounds.width)! / 2
         
@@ -180,13 +184,15 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             
             if let sourceIndexPath = item.sourceIndexPath {
                 
-                if let imageUrlCollectionItem = item.dragItem.localObject as? (url: URL, aspectRatio: CGFloat) {
+                if let imageUrlCollectionItem = item.dragItem.localObject as? ImageGalleryModel.galleryContent {
                     
                     collectionView.performBatchUpdates({
+                        print("Performing Source Batch")
                         imageGallery.galleryContents.remove(at: sourceIndexPath.item)
-                        imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: imageUrlCollectionItem.url, aspectRatio: imageUrlCollectionItem.aspectRatio), at: destinationIndexPath.item)
+                        imageGallery.galleryContents.insert(imageUrlCollectionItem, at: destinationIndexPath.item)
                         collectionView.deleteItems(at: [sourceIndexPath])
                         collectionView.insertItems(at: [destinationIndexPath])
+                        save()
                     })
                     coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
                     
@@ -202,6 +208,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                             if let image = image {
                                 placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
                                     self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url, aspectRatio: image.size.height/image.size.width), at: insertionIndexPath.item)
+                                    self?.save()
                                 })
                             }
                             else {
@@ -243,6 +250,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 {
                     let imageGalleryContent = imageGallery.galleryContents[collectionViewIndex.item]
                     imageVC.imageURL = imageGalleryContent.url
+                    self.document?.close()
                 }
             }
         }
@@ -258,6 +266,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     if let image = image {
                         self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url,aspectRatio: image.size.height/image.size.width), at: 0)
                         self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
+                        self?.save()
                     }
                 })
                     
@@ -288,6 +297,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         if imageGallery.galleryContents.count > 0 {
             imageGallery.galleryContents.remove(at: 0)
             collectionView.deleteItems(at: [IndexPath(row: 0, section: 0)])
+            save()
         }
     }
 
