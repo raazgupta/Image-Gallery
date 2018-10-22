@@ -60,6 +60,14 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     private func fetchImage() {
         if let url = imageURL {
             spinner.startAnimating()
+            
+            getImageFromURL(url: url, completion: { [weak self] (image) in
+                if let image = image, url == self?.imageURL {
+                    self?.image = image
+                }
+            })
+            
+            /*
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 let urlContents = try? Data(contentsOf: url)
                 DispatchQueue.main.async {
@@ -68,6 +76,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                     }
                 }
             }
+            */
         }
     }
     

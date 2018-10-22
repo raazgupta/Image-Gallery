@@ -198,6 +198,17 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 item.dragItem.itemProvider.loadObject(ofClass: NSURL.self) { (provider, error) in
                     if let url = provider as? URL {
                         
+                        getImageFromURL(url: url, completion: {[weak self] (image) in
+                            if let image = image {
+                                placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
+                                    self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url, aspectRatio: image.size.height/image.size.width), at: insertionIndexPath.item)
+                                })
+                            }
+                            else {
+                                placeholderContext.deletePlaceholder()
+                            }
+                        })
+                        /*
                         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                             let urlContents = try? Data(contentsOf: url.imageURL)
                             DispatchQueue.main.async {
@@ -215,6 +226,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                                 
                             }
                         }
+                        */
                     }
                 }
             }
@@ -241,16 +253,15 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         
         if UIPasteboard.general.hasURLs {
             if let url = UIPasteboard.general.url {
-                DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                    
-                    if let image = getImageFromURL(url: url) {
-                        DispatchQueue.main.async {
-                            self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url,aspectRatio: image.size.height/image.size.width), at: 0)
-                            self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
-                        }
+                
+                getImageFromURL(url: url, completion: { [weak self] (image) in
+                    if let image = image {
+                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url,aspectRatio: image.size.height/image.size.width), at: 0)
+                        self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
                     }
+                })
                     
-                    
+            
                     /*
                     let urlContents = try? Data(contentsOf: url.imageURL)
                     DispatchQueue.main.async {
@@ -264,7 +275,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         
                     }
                     */
-                }
+                
             }
         }
         else {

@@ -236,7 +236,7 @@ extension UIDocument.State: CustomStringConvertible {
     }
 }
 
-func getImageFromURL(url: URL) -> UIImage? {
+func getImageFromURL(url: URL, completion: @escaping (_ image:UIImage?)->Void) {
     
     var image: UIImage?
     
@@ -245,25 +245,30 @@ func getImageFromURL(url: URL) -> UIImage? {
     let cacheResponse = URLCache.shared.cachedResponse(for: request)
     
     if cacheResponse == nil {
-        let config = URLSessionConfiguration.default
-        config.urlCache = URLCache.shared
-        config.urlCache = URLCache(memoryCapacity: 1000000, diskCapacity: 2000000, diskPath: "urlCache")
-        let session = URLSession(configuration: config)
-        
-        let task = session.dataTask(with: request) { (data, response, error) in
-            if let data = data, let response = response {
-                let cacheResponse = CachedURLResponse(response: response, data: data)
-                URLCache.shared.storeCachedResponse(cacheResponse, for: request)
-                image = UIImage(data: data)
-            }
+        DispatchQueue.global(qos: .userInitiated).async {
+            let config = URLSessionConfiguration.default
+            config.urlCache = URLCache.shared
+            config.urlCache = URLCache(memoryCapacity: 3*1024*1024, diskCapacity: 1000*1024*1024, diskPath: "imageGalleryCache")
+            let session = URLSession(configuration: config)
             
+            let task = session.dataTask(with: request) { (data, response, error) in
+                DispatchQueue.main.async {
+                    if let data = data, let response = response {
+                        let cacheResponse = CachedURLResponse(response: response, data: data)
+                        URLCache.shared.storeCachedResponse(cacheResponse, for: request)
+                        image = UIImage(data: data)
+                        completion(image)
+                    }
+                }
+            }
+            task.resume()
         }
-        task.resume()
         
     } else {
         image = UIImage(data: cacheResponse!.data)
+        completion(image)
     }
     
-    return image
+    
     
 }

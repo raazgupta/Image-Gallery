@@ -20,6 +20,17 @@ class ImageGalleryCollectionViewCell: UICollectionViewCell {
         imageView.image = nil
         
         if let url = backgroundImageUrl {
+            
+            getImageFromURL(url: url, completion: { [weak self] (image) in
+                    if let image = image, url == self?.backgroundImageUrl {
+                        self?.imageView.image = image
+                        self?.imageView.sizeThatFits((self?.bounds.size)!)
+                        self?.imageCellSpinner.stopAnimating()
+                    }
+                })
+            
+            
+            /*
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 let urlContents = try? Data(contentsOf: url)
                 DispatchQueue.main.async {
@@ -32,6 +43,7 @@ class ImageGalleryCollectionViewCell: UICollectionViewCell {
                     }
                 }
             }
+            */
         }
     }
     
