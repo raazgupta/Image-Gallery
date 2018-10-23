@@ -22,8 +22,8 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         allowsPickingMultipleItems = false
         
         // Update the style of the UIDocumentBrowserViewController
-        // browserUserInterfaceStyle = .dark
-        // view.tintColor = .white
+        browserUserInterfaceStyle = .dark
+        view.tintColor = #colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1)
         
         // Specify the allowed content types of your application via the Info.plist.
         
