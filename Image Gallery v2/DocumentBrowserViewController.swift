@@ -75,6 +75,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         if let imageGalleryCollectionViewController = documentVC.contents as? ImageGalleryCollectionViewController {
             imageGalleryCollectionViewController.document = ImageGalleryDocument(fileURL: documentURL)
         }
+        documentVC.modalPresentationStyle = .fullScreen
         present(documentVC, animated: true)
     }
 }

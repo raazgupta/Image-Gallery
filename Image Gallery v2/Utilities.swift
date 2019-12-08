@@ -259,6 +259,9 @@ func getImageFromURL(url: URL, completion: @escaping (_ image:UIImage?)->Void) {
                         image = UIImage(data: data)
                         completion(image)
                     }
+                    else {
+                        completion(nil)
+                    }
                 }
             }
             task.resume()
@@ -272,3 +275,5 @@ func getImageFromURL(url: URL, completion: @escaping (_ image:UIImage?)->Void) {
     
     
 }
+
+

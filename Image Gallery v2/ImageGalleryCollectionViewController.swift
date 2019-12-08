@@ -268,6 +268,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
                         self?.save()
                     }
+                    else {
+                        print("Not an image")
+                        self?.presentBadWarning()
+                    }
                 })
                     
             
@@ -289,8 +293,17 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         }
         else {
             print ("No URL")
+            presentBadWarning()
         }
         
+    }
+    
+    private func presentBadWarning() {
+        let alert = UIAlertController(title: "Image transfer failed", message: "Unable to get Image from URL", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "I will try again another way!", style: .default))
+        
+        present(alert, animated: true)
     }
     
     @IBAction func undoImageAdd(_ sender: Any) {
