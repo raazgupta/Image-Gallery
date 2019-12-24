@@ -21,7 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AD99A10B217BD6ED00A288B4 /* Image Gallery v2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Gallery v2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD99A10B217BD6ED00A288B4 /* Image Vault.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Vault.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
 		AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryDocument.swift; sourceTree = "<group>"; };
@@ -58,7 +58,7 @@
 		AD99A10C217BD6ED00A288B4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AD99A10B217BD6ED00A288B4 /* Image Gallery v2.app */,
+				AD99A10B217BD6ED00A288B4 /* Image Vault.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,7 +107,7 @@
 			);
 			name = "Image Gallery v2";
 			productName = "Image Gallery v2";
-			productReference = AD99A10B217BD6ED00A288B4 /* Image Gallery v2.app */;
+			productReference = AD99A10B217BD6ED00A288B4 /* Image Vault.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -318,13 +318,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = C63R5PEP3C;
 				INFOPLIST_FILE = "Image Gallery v2/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.soulfulmachine.Image-Gallery-v2";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Image Vault";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -337,13 +337,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = C63R5PEP3C;
 				INFOPLIST_FILE = "Image Gallery v2/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.soulfulmachine.Image-Gallery-v2";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Image Vault";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

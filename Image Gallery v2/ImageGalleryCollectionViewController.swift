@@ -138,6 +138,25 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         return cell
     }
     
+
+    
+    override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil){ action in
+            
+            
+            let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
+                if self.imageGallery.galleryContents.count > 0 {
+                    self.imageGallery.galleryContents.remove(at: indexPath.row)
+                    collectionView.deleteItems(at: [indexPath])
+                    self.save()
+                }
+            })
+            
+            return UIMenu(title: "", image: nil, identifier: nil, children: [delete])
+        }
+        return configuration
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: imageCellWidth, height: imageCellWidth * imageGallery.galleryContents[indexPath.item].aspectRatio)
     }
