@@ -143,7 +143,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil){ action in
             
-            
+            // Press image to delete
             let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
                 if self.imageGallery.galleryContents.count > 0 {
                     self.imageGallery.galleryContents.remove(at: indexPath.row)
@@ -152,7 +152,15 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 }
             })
             
-            return UIMenu(title: "", image: nil, identifier: nil, children: [delete])
+            // Press image to copy URL
+            let copyURL = UIAction(title: "Copy", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil, handler: { action in
+                if self.imageGallery.galleryContents.count > 0 {
+                    let imageURL = self.imageGallery.galleryContents[indexPath.row].url
+                    UIPasteboard.general.url = imageURL
+                }
+            })
+            
+            return UIMenu(title: "", image: nil, identifier: nil, children: [delete, copyURL])
         }
         return configuration
     }

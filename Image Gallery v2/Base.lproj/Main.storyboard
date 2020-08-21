@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -11,7 +10,7 @@
         <!--Document Browser View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="Image_Gallery_v2" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="Image_Vault" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -26,13 +25,7 @@
         <!--Image Gallery Collection View Controller-->
         <scene sceneID="77O-mn-gfD">
             <objects>
-                <pinchGestureRecognizer id="4Uk-mg-PAr">
-                    <connections>
-                        <action selector="scaleCells:" destination="Uh1-Fd-L2c" id="0hH-pK-xBe"/>
-                    </connections>
-                </pinchGestureRecognizer>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="xuI-qV-pXt" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <collectionViewController id="Uh1-Fd-L2c" customClass="ImageGalleryCollectionViewController" customModule="Image_Gallery_v2" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController id="Uh1-Fd-L2c" customClass="ImageGalleryCollectionViewController" customModule="Image_Vault" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="lz6-mN-zYT">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -46,7 +39,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImageCell" id="gky-xq-a1W" customClass="ImageGalleryCollectionViewCell" customModule="Image_Gallery_v2" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImageCell" id="gky-xq-a1W" customClass="ImageGalleryCollectionViewCell" customModule="Image_Vault" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -109,12 +102,12 @@
                             </connections>
                         </barButtonItem>
                         <rightBarButtonItems>
-                            <barButtonItem systemItem="done" id="eg6-c3-Gho">
+                            <barButtonItem image="clear.fill" catalog="system" id="eg6-c3-Gho">
                                 <connections>
                                     <action selector="close:" destination="Uh1-Fd-L2c" id="J8I-FY-goi"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="add" id="tju-gX-u4a">
+                            <barButtonItem image="arrow.down.doc.fill" catalog="system" id="tju-gX-u4a">
                                 <connections>
                                     <action selector="addPaste:" destination="Uh1-Fd-L2c" id="BoU-Hd-QQf"/>
                                 </connections>
@@ -125,13 +118,19 @@
                         <outlet property="imageGalleryView" destination="lz6-mN-zYT" id="84D-wl-YQ1"/>
                     </connections>
                 </collectionViewController>
+                <pinchGestureRecognizer id="4Uk-mg-PAr">
+                    <connections>
+                        <action selector="scaleCells:" destination="Uh1-Fd-L2c" id="0hH-pK-xBe"/>
+                    </connections>
+                </pinchGestureRecognizer>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xuI-qV-pXt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1423" y="654"/>
         </scene>
         <!--Image View Controller-->
         <scene sceneID="mUP-l8-YKC">
             <objects>
-                <viewController id="hDs-c9-uu7" customClass="ImageViewController" customModule="Image_Gallery_v2" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="hDs-c9-uu7" customClass="ImageViewController" customModule="Image_Vault" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="XAB-He-6mV">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -169,7 +168,6 @@
         <!--Navigation Controller-->
         <scene sceneID="ucs-fd-FVC">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="bfW-qB-nPq" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController storyboardIdentifier="DocumentMVC" automaticallyAdjustsScrollViewInsets="NO" id="M7v-Wq-r1b" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="HpS-Gj-TMH">
@@ -182,8 +180,13 @@
                         <segue destination="Uh1-Fd-L2c" kind="relationship" relationship="rootViewController" id="KeW-s4-PQI"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bfW-qB-nPq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="699" y="654"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="arrow.down.doc.fill" catalog="system" width="56" height="64"/>
+        <image name="clear.fill" catalog="system" width="64" height="56"/>
+    </resources>
 </document>
