@@ -24,8 +24,12 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             if success {
                 self.imageGallery.galleryTitle = self.document?.localizedName ?? "Gallery"
                 self.imageGallery = self.document?.imageGallery ?? ImageGalleryModel(title: "Gallery")
+                self.showOrder = self.imageGallery.determineShowOrder(random: true)
             }
         }
+        
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -56,7 +60,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     //var imageUrlCollection: [(url: URL, aspectRatio: CGFloat)] = []
     var imageGallery: ImageGalleryModel = ImageGalleryModel(title: "Gallery")
-    
+    var showOrder: [Int] = []
     var imageCellWidth: CGFloat = 180.0
     
     @IBAction func scaleCells(_ sender: UIPinchGestureRecognizer) {
@@ -129,10 +133,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath)
-    
+        let showOrderCell = showOrder[indexPath.item]
+        
         // Configure the cell
         if let imageCell = cell as? ImageGalleryCollectionViewCell {
-            imageCell.backgroundImageUrl = imageGallery.galleryContents[indexPath.item].url
+            imageCell.backgroundImageUrl = imageGallery.galleryContents[showOrderCell].url
         }
     
         return cell
@@ -166,7 +171,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: imageCellWidth, height: imageCellWidth * imageGallery.galleryContents[indexPath.item].aspectRatio)
+        let showOrderCell = showOrder[indexPath.item]
+        return CGSize(width: imageCellWidth, height: imageCellWidth * imageGallery.galleryContents[showOrderCell].aspectRatio)
     }
 
     

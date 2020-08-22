@@ -37,4 +37,26 @@ struct ImageGalleryModel: Codable {
         return try? JSONEncoder().encode(self)
     }
     
+    func determineShowOrder(random:Bool=false) -> [Int]{
+        let galleryCount = galleryContents.count
+        var showOrder = [Int]()
+        var randomOrder = [Int]()
+        
+        for i in 0..<galleryCount {
+            showOrder.append(i)
+        }
+        
+        if random {
+            while showOrder.count > 0 {
+                let showOrderCount = showOrder.count
+                let randomIndex = Int.random(in: 0..<showOrderCount)
+                randomOrder.append(showOrder.remove(at: randomIndex))
+            }
+            return randomOrder
+        }
+        else {
+            return showOrder
+        }
+    }
+    
 }
