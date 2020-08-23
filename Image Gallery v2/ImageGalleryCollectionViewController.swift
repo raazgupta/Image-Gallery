@@ -24,7 +24,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             if success {
                 self.imageGallery.galleryTitle = self.document?.localizedName ?? "Gallery"
                 self.imageGallery = self.document?.imageGallery ?? ImageGalleryModel(title: "Gallery")
-                self.showOrder = self.imageGallery.determineShowOrder(random: true)
+                self.showOrder = self.imageGallery.determineShowOrder(random: false)
             }
         }
         
@@ -52,6 +52,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         dismiss(animated: true) {
             self.document?.close()
         }
+    }
+    @IBAction func shuffle(_ sender: UIBarButtonItem) {
+        showOrder = imageGallery.determineShowOrder(random: true)
+        refreshImageCells()
     }
     
     // Doing Collection View things
@@ -151,9 +155,12 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             // Press image to delete
             let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
                 if self.imageGallery.galleryContents.count > 0 {
-                    self.imageGallery.galleryContents.remove(at: indexPath.row)
+                    let showIndex = self.showOrder[indexPath.row]
+                    self.imageGallery.galleryContents.remove(at: showIndex)
+                    self.showOrder = self.imageGallery.determineShowOrder()
                     collectionView.deleteItems(at: [indexPath])
                     self.save()
+                    self.refreshImageCells()
                 }
             })
             
@@ -281,7 +288,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             if let imageVC = segue.destination.contents as? ImageViewController {
                 if let collectionViewIndices = collectionView?.indexPathsForSelectedItems, let collectionViewIndex = collectionViewIndices.first
                 {
-                    let imageGalleryContent = imageGallery.galleryContents[collectionViewIndex.item]
+                    let galleryIndex = showOrder[collectionViewIndex.item]
+                    let imageGalleryContent = imageGallery.galleryContents[galleryIndex]
                     imageVC.imageURL = imageGalleryContent.url
                     self.document?.close()
                 }
@@ -298,6 +306,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 getImageFromURL(url: url, completion: { [weak self] (image) in
                     if let image = image {
                         self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url,aspectRatio: image.size.height/image.size.width), at: 0)
+                        self?.showOrder.append(self?.showOrder.count ?? 0)
                         self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
                         self?.save()
                     }
@@ -341,9 +350,12 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     @IBAction func undoImageAdd(_ sender: Any) {
         if imageGallery.galleryContents.count > 0 {
-            imageGallery.galleryContents.remove(at: 0)
+            let showIndex = showOrder[0]
+            imageGallery.galleryContents.remove(at: showIndex)
+            showOrder = imageGallery.determineShowOrder()
             collectionView.deleteItems(at: [IndexPath(row: 0, section: 0)])
             save()
+            refreshImageCells()
         }
     }
 
