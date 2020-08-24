@@ -71,12 +71,27 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     
     func presentDocument(at documentURL: URL) {
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let documentVC = storyBoard.instantiateViewController(withIdentifier: "DocumentMVC")
-        if let imageGalleryCollectionViewController = documentVC.contents as? ImageGalleryCollectionViewController {
-            imageGalleryCollectionViewController.document = ImageGalleryDocument(fileURL: documentURL)
+        let pathExt = documentURL.pathExtension
+        //let uti: String? = (try? documentURL.resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
+        
+        if pathExt == "json" {
+            let documentVC = storyBoard.instantiateViewController(withIdentifier: "DocumentMVC")
+            if let imageGalleryCollectionViewController = documentVC.contents as? ImageGalleryCollectionViewController {
+                imageGalleryCollectionViewController.document = ImageGalleryDocument(fileURL: documentURL)
+            }
+            documentVC.modalPresentationStyle = .fullScreen
+            present(documentVC, animated: true)
         }
-        documentVC.modalPresentationStyle = .fullScreen
-        present(documentVC, animated: true)
+        
+        if (pathExt == "jpeg" || pathExt == "png"){
+            let imageDocumentVC = storyBoard.instantiateViewController(identifier: "ImageDocumentMVC")
+            if let imageViewController = imageDocumentVC.contents as? ImageViewController2 {
+                imageViewController.document = ImageDocument(fileURL: documentURL)
+            }
+            imageDocumentVC.modalPresentationStyle = .fullScreen
+            present(imageDocumentVC, animated: true)
+        }
+ 
     }
 }
 

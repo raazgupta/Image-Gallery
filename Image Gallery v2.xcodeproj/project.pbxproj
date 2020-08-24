@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD377D0D24F33E6300D0B860 /* ImageViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */; };
+		AD377D0F24F346DA00D0B860 /* ImageDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D0E24F346DA00D0B860 /* ImageDocument.swift */; };
 		AD99A10F217BD6ED00A288B4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */; };
 		AD99A111217BD6ED00A288B4 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */; };
 		AD99A115217BD6ED00A288B4 /* ImageGalleryDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */; };
@@ -21,6 +23,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController2.swift; sourceTree = "<group>"; };
+		AD377D0E24F346DA00D0B860 /* ImageDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDocument.swift; sourceTree = "<group>"; };
 		AD99A10B217BD6ED00A288B4 /* Image Vault.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Vault.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
@@ -69,9 +73,11 @@
 				AD99A116217BD6ED00A288B4 /* Main.storyboard */,
 				AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */,
 				AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */,
+				AD377D0E24F346DA00D0B860 /* ImageDocument.swift */,
 				AD99A129217BDB8600A288B4 /* ImageGalleryCollectionViewController.swift */,
 				AD99A12B217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift */,
 				AD99A125217BDB3A00A288B4 /* ImageViewController.swift */,
+				AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */,
 				AD99A127217BDB7D00A288B4 /* ImageGalleryModel.swift */,
 				AD99A12D217BDB9900A288B4 /* Utilities.swift */,
 				AD99A11E217BD6F000A288B4 /* Info.plist */,
@@ -168,8 +174,10 @@
 				AD99A12A217BDB8600A288B4 /* ImageGalleryCollectionViewController.swift in Sources */,
 				AD99A128217BDB7D00A288B4 /* ImageGalleryModel.swift in Sources */,
 				AD99A10F217BD6ED00A288B4 /* AppDelegate.swift in Sources */,
+				AD377D0F24F346DA00D0B860 /* ImageDocument.swift in Sources */,
 				AD99A12E217BDB9900A288B4 /* Utilities.swift in Sources */,
 				AD99A12C217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift in Sources */,
+				AD377D0D24F33E6300D0B860 /* ImageViewController2.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -167,7 +167,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             // Press image to copy URL
             let copyURL = UIAction(title: "Copy", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil, handler: { action in
                 if self.imageGallery.galleryContents.count > 0 {
-                    let imageURL = self.imageGallery.galleryContents[indexPath.row].url
+                    let showIndex = self.showOrder[indexPath.row]
+                    let imageURL = self.imageGallery.galleryContents[showIndex].url
                     UIPasteboard.general.url = imageURL
                 }
             })

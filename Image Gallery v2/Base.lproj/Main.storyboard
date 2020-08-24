@@ -189,6 +189,66 @@
             </objects>
             <point key="canvasLocation" x="699" y="654"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="HXS-fz-crq">
+            <objects>
+                <navigationController storyboardIdentifier="ImageDocumentMVC" id="NVq-Qa-88z" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="DdS-DN-tao">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="AUY-JA-cYM" kind="relationship" relationship="rootViewController" id="YED-ge-vhq"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="y0q-tB-9rz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="699" y="1317"/>
+        </scene>
+        <!--Image View Controller2-->
+        <scene sceneID="Ulu-9m-AVg">
+            <objects>
+                <viewController id="AUY-JA-cYM" customClass="ImageViewController2" customModule="Image_Vault" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="s4y-0U-M1e">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9r0-NM-fgJ">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" red="1" green="0.49327188729999999" blue="0.47399842739999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </scrollView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="d1M-Pk-fy6">
+                                <rect key="frame" x="197" y="358" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="9r0-NM-fgJ" firstAttribute="top" secondItem="s4y-0U-M1e" secondAttribute="top" id="AFF-hY-Maa"/>
+                            <constraint firstItem="d1M-Pk-fy6" firstAttribute="centerX" secondItem="s4y-0U-M1e" secondAttribute="centerX" id="CbM-K7-oqX"/>
+                            <constraint firstItem="d1M-Pk-fy6" firstAttribute="centerY" secondItem="s4y-0U-M1e" secondAttribute="centerY" id="EQO-WM-q7I"/>
+                            <constraint firstAttribute="trailing" secondItem="9r0-NM-fgJ" secondAttribute="trailing" id="mmO-ii-lLf"/>
+                            <constraint firstItem="9r0-NM-fgJ" firstAttribute="leading" secondItem="s4y-0U-M1e" secondAttribute="leading" id="nXe-9O-yd2"/>
+                            <constraint firstAttribute="bottom" secondItem="9r0-NM-fgJ" secondAttribute="bottom" id="pBe-Ne-bn7"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="1Mj-IU-afi"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="idu-mt-ejk">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="clear.fill" catalog="system" id="jKO-Hi-gbx">
+                            <connections>
+                                <action selector="close:" destination="AUY-JA-cYM" id="kua-m9-pFu"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="scrollView" destination="9r0-NM-fgJ" id="DIT-xI-mSl"/>
+                        <outlet property="spinner" destination="d1M-Pk-fy6" id="d7x-SW-AhT"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vLX-NB-DpU" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1422" y="1317"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.down.doc.fill" catalog="system" width="115" height="128"/>

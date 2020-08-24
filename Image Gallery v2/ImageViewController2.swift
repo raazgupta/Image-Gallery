@@ -8,8 +8,21 @@
 
 import UIKit
 
-class ImageViewController: UIViewController, UIScrollViewDelegate {
+class ImageViewController2: UIViewController, UIScrollViewDelegate {
 
+    var document: ImageDocument?
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        document?.open { success in
+            if success {
+                if self.document?.fileType == "public.png" || self.document?.fileType == "public.jpeg" {
+                    self.image = UIImage(data: (self.document?.fileData)!)
+                }
+            }
+        }
+    }
+    
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
     @IBOutlet weak var scrollView: UIScrollView! {
@@ -23,6 +36,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     
     var imageView = UIImageView()
     
+    /*
     var imageURL: URL? {
         didSet {
             image = nil
@@ -32,6 +46,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             }
         }
     }
+ */
     
     private var image: UIImage? {
         get {
@@ -45,18 +60,20 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
+    /*
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if imageView.image == nil {
             fetchImage()
         }
     }
+ */
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
     
-    
+    /*
     private func fetchImage() {
         if let url = imageURL {
             spinner.startAnimating()
@@ -79,9 +96,15 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             */
         }
     }
+    */
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    
+    @IBAction func close(_ sender: Any) {
+        dismiss(animated: true)
+    }
+    
     
 }
