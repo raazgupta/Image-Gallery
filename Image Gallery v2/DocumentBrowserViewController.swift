@@ -25,6 +25,9 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         browserUserInterfaceStyle = .dark
         view.tintColor = #colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1)
         
+        let settingsButton = UIBarButtonItem(title: "Help", style: .plain, target: self, action: #selector(settingsButton(sender:)))
+        additionalTrailingNavigationBarButtonItems = [settingsButton]
+        
         // Specify the allowed content types of your application via the Info.plist.
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -39,6 +42,13 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
             
         }
         
+    }
+    
+    @objc func settingsButton(sender: UIBarButtonItem){
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let settingsVC = storyBoard.instantiateViewController(withIdentifier: "settingsScreen")
+        settingsVC.modalPresentationStyle = .fullScreen
+        present(settingsVC, animated: true)
     }
     
     

@@ -27,10 +27,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        showBlankScreenWindow()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        hideBlankScreen()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -60,6 +62,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         return true
+    }
+    
+    private var blankScreenWindow: UIWindow?
+    
+    private func showBlankScreenWindow(){
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        blankScreenWindow = UIWindow(frame: UIScreen.main.bounds)
+        blankScreenWindow?.rootViewController = storyBoard.instantiateViewController(withIdentifier: "blankScreen")
+        blankScreenWindow?.windowLevel = .alert + 1
+        blankScreenWindow?.makeKeyAndVisible()
+    }
+    
+    private func hideBlankScreen() {
+        blankScreenWindow?.isHidden = true
+        blankScreenWindow = nil
     }
 
 
