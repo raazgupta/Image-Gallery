@@ -10,13 +10,17 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate {
+class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate, EnterPasswordViewContollerDelegate {
+    
+    
     
     // Doing Document Browser View Controller things
     
     // Converting from JSON document to ImageGalleryModel
     var document: ImageGalleryDocument?
     var galleryPW: String?
+    var showImages: Bool = false
+    var showEnterPassword: Bool = true
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -25,12 +29,40 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             if success {
                 self.imageGallery.galleryTitle = self.document?.localizedName ?? "Gallery"
                 self.imageGallery = self.document?.imageGallery ?? ImageGalleryModel(title: "Gallery")
-                self.showOrder = self.imageGallery.determineShowOrder(random: false)
+                
+                if self.imageGallery.galleryPW != "" {
+                    
+                    if self.showEnterPassword {
+                        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+                        let enterPasswordVC = storyBoard.instantiateViewController(withIdentifier: "enterPassword") as! EnterPasswordViewController
+                        enterPasswordVC.delegate = self
+                        enterPasswordVC.correctPassword = self.imageGallery.galleryPW
+                        enterPasswordVC.modalPresentationStyle = .fullScreen
+                        self.present(enterPasswordVC,animated: true)
+                    }
+                    if self.showImages == false {
+                        self.dismiss(animated: true)
+                    }
+                    else if self.showImages == true {
+                        self.showOrder = self.imageGallery.determineShowOrder(random: false)
+                    }
+                    
+                }
+                else {
+                    self.showImages = true
+                    self.showOrder = self.imageGallery.determineShowOrder(random: false)
+                }
+                
             }
         }
         
         
         
+    }
+    
+    func passwordResult(showImages: Bool, showEnterPassword: Bool) {
+        self.showImages = showImages
+        self.showEnterPassword = showEnterPassword
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -49,9 +81,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
     
     @IBAction func close(_ sender: UIBarButtonItem) {
+
         if let galleryPW = galleryPW {
             imageGallery.galleryPW = galleryPW
         }
+
         save()
         dismiss(animated: true) {
             self.document?.close()
@@ -136,7 +170,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageGallery.galleryContents.count
+        return showOrder.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
