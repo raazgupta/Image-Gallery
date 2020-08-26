@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StartScreenViewController: UIViewController {
+class BlankScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

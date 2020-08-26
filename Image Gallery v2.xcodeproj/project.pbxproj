@@ -9,8 +9,9 @@
 /* Begin PBXBuildFile section */
 		AD377D0D24F33E6300D0B860 /* ImageViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */; };
 		AD377D0F24F346DA00D0B860 /* ImageDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D0E24F346DA00D0B860 /* ImageDocument.swift */; };
-		AD377D1124F465A700D0B860 /* StartScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1024F465A700D0B860 /* StartScreenViewController.swift */; };
-		AD377D1324F47D3000D0B860 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1224F47D3000D0B860 /* SettingsViewController.swift */; };
+		AD377D1124F465A700D0B860 /* BlankScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1024F465A700D0B860 /* BlankScreenViewController.swift */; };
+		AD377D1324F47D3000D0B860 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1224F47D3000D0B860 /* HelpViewController.swift */; };
+		AD377D1524F5CAA300D0B860 /* SecurityOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */; };
 		AD99A10F217BD6ED00A288B4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */; };
 		AD99A111217BD6ED00A288B4 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */; };
 		AD99A115217BD6ED00A288B4 /* ImageGalleryDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */; };
@@ -27,8 +28,9 @@
 /* Begin PBXFileReference section */
 		AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController2.swift; sourceTree = "<group>"; };
 		AD377D0E24F346DA00D0B860 /* ImageDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDocument.swift; sourceTree = "<group>"; };
-		AD377D1024F465A700D0B860 /* StartScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartScreenViewController.swift; sourceTree = "<group>"; };
-		AD377D1224F47D3000D0B860 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		AD377D1024F465A700D0B860 /* BlankScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlankScreenViewController.swift; sourceTree = "<group>"; };
+		AD377D1224F47D3000D0B860 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
+		AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityOptionsViewController.swift; sourceTree = "<group>"; };
 		AD99A10B217BD6ED00A288B4 /* Image Keeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Keeper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
@@ -75,8 +77,9 @@
 			isa = PBXGroup;
 			children = (
 				AD99A116217BD6ED00A288B4 /* Main.storyboard */,
-				AD377D1224F47D3000D0B860 /* SettingsViewController.swift */,
-				AD377D1024F465A700D0B860 /* StartScreenViewController.swift */,
+				AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */,
+				AD377D1224F47D3000D0B860 /* HelpViewController.swift */,
+				AD377D1024F465A700D0B860 /* BlankScreenViewController.swift */,
 				AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */,
 				AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */,
 				AD377D0E24F346DA00D0B860 /* ImageDocument.swift */,
@@ -174,7 +177,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AD377D1124F465A700D0B860 /* StartScreenViewController.swift in Sources */,
+				AD377D1124F465A700D0B860 /* BlankScreenViewController.swift in Sources */,
+				AD377D1524F5CAA300D0B860 /* SecurityOptionsViewController.swift in Sources */,
 				AD99A115217BD6ED00A288B4 /* ImageGalleryDocument.swift in Sources */,
 				AD99A111217BD6ED00A288B4 /* DocumentBrowserViewController.swift in Sources */,
 				AD99A126217BDB3A00A288B4 /* ImageViewController.swift in Sources */,
@@ -185,7 +189,7 @@
 				AD99A12E217BDB9900A288B4 /* Utilities.swift in Sources */,
 				AD99A12C217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift in Sources */,
 				AD377D0D24F33E6300D0B860 /* ImageViewController2.swift in Sources */,
-				AD377D1324F47D3000D0B860 /* SettingsViewController.swift in Sources */,
+				AD377D1324F47D3000D0B860 /* HelpViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

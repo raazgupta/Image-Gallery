@@ -10,12 +10,13 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate {
+class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate {
     
     // Doing Document Browser View Controller things
     
     // Converting from JSON document to ImageGalleryModel
     var document: ImageGalleryDocument?
+    var galleryPW: String?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -48,6 +49,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
     
     @IBAction func close(_ sender: UIBarButtonItem) {
+        if let galleryPW = galleryPW {
+            imageGallery.galleryPW = galleryPW
+        }
         save()
         dismiss(animated: true) {
             self.document?.close()
@@ -296,6 +300,14 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 }
             }
         }
+        if segue.identifier == "showSecurityOptions" {
+            let securityVC = segue.destination as! SecurityOptionsViewController
+            securityVC.delegate = self
+        }
+    }
+    
+    func doSomethingWith(data: String) {
+        galleryPW = data
     }
     
     // Add new collection view cell and paste image in PasteBoard

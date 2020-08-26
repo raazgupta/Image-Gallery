@@ -12,6 +12,7 @@ import UIKit
 struct ImageGalleryModel: Codable {
     
     var galleryTitle: String
+    var galleryPW: String
     var galleryContents = [galleryContent]()
     
     struct galleryContent: Codable {
@@ -21,6 +22,7 @@ struct ImageGalleryModel: Codable {
     
     init(title: String) {
         galleryTitle = title
+        galleryPW = ""
         galleryContents = []
     }
     
