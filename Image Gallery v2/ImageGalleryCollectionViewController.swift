@@ -19,45 +19,54 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     // Converting from JSON document to ImageGalleryModel
     var document: ImageGalleryDocument?
     var galleryPW: String?
+    var galleryEN: Bool?
     var showImages: Bool = false
     var showEnterPassword: Bool = true
+    //var isImageGalleryDecrypted = false
+    var isImageGalleryEncrypted = false
+    var isDocumentOpen = false
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        document?.open { success in
-            if success {
-                self.imageGallery.galleryTitle = self.document?.localizedName ?? "Gallery"
-                self.imageGallery = self.document?.imageGallery ?? ImageGalleryModel(title: "Gallery")
-                
-                if self.imageGallery.galleryPW != "" {
+        if !isDocumentOpen {
+            document?.open { success in
+                if success {
+                    self.isDocumentOpen = true
+                    self.imageGallery.galleryTitle = self.document?.localizedName ?? "Gallery"
+                    self.imageGallery = self.document?.imageGallery ?? ImageGalleryModel(title: "Gallery")
                     
-                    if self.showEnterPassword {
-                        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-                        let enterPasswordVC = storyBoard.instantiateViewController(withIdentifier: "enterPassword") as! EnterPasswordViewController
-                        enterPasswordVC.delegate = self
-                        enterPasswordVC.correctPassword = self.imageGallery.galleryPW
-                        enterPasswordVC.modalPresentationStyle = .fullScreen
-                        self.present(enterPasswordVC,animated: true)
-                    }
-                    if self.showImages == false {
-                        self.dismiss(animated: true)
-                    }
-                    else if self.showImages == true {
-                        self.showOrder = self.imageGallery.determineShowOrder(random: false)
+                    if self.imageGallery.galleryPW != "" && self.imageGallery.galleryEN == true {
+                        self.galleryPW = self.imageGallery.galleryPW
+                        self.galleryEN = self.imageGallery.galleryEN
+                        self.galleryEN = self.decrypt()
                     }
                     
+                    if self.imageGallery.galleryPW != "" {
+                        
+                        if self.showEnterPassword {
+                            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+                            let enterPasswordVC = storyBoard.instantiateViewController(withIdentifier: "enterPassword") as! EnterPasswordViewController
+                            enterPasswordVC.delegate = self
+                            enterPasswordVC.correctPassword = self.imageGallery.galleryPW
+                            enterPasswordVC.modalPresentationStyle = .fullScreen
+                            self.present(enterPasswordVC,animated: true)
+                        }
+                    }
+                    else {
+                        self.showImages = true
+                    }
                 }
-                else {
-                    self.showImages = true
-                    self.showOrder = self.imageGallery.determineShowOrder(random: false)
-                }
-                
             }
         }
         
-        
-        
+        if self.showEnterPassword == false && self.showImages == false {
+            self.dismiss(animated: true)
+        }
+        else if self.showImages == true {
+            self.showOrder = self.imageGallery.determineShowOrder(random: false)
+            //self.refreshImageCells()
+        }
     }
     
     func passwordResult(showImages: Bool, showEnterPassword: Bool) {
@@ -74,6 +83,16 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
     
     @IBAction func save() {
+        
+        if let galleryPW = galleryPW {
+            imageGallery.galleryPW = galleryPW
+        }
+        if let galleryEN = galleryEN, let _ = galleryPW {
+            if galleryEN == true {
+                imageGallery.galleryEN = encrypt()
+            }
+        }
+        
         document?.imageGallery = imageGallery
         if document?.imageGallery != nil {
             document?.updateChangeCount(.done)
@@ -82,15 +101,85 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     @IBAction func close(_ sender: UIBarButtonItem) {
 
-        if let galleryPW = galleryPW {
-            imageGallery.galleryPW = galleryPW
-        }
-
         save()
         dismiss(animated: true) {
             self.document?.close()
         }
     }
+    
+    private func encrypt() -> Bool{
+        
+        if !isImageGalleryEncrypted {
+            var newImageGallery = ImageGalleryModel(title: "Gallery")
+            newImageGallery.galleryPW = galleryPW!
+            newImageGallery.galleryEN = galleryEN!
+            
+            for galleryContent in imageGallery.galleryContents {
+                let pwLength = UInt32(galleryPW!.count)
+                var enUrlString = ""
+                for character in galleryContent.url {
+                    guard let uniCode = UnicodeScalar(String(character)) else {
+                        return false
+                    }
+                    guard let newUniCode = UnicodeScalar(uniCode.value+pwLength) else {
+                        return false
+                    }
+                    enUrlString.append(String(newUniCode))
+                    /*
+                    switch uniCode {
+                    case "A"..<"Z","a"..<"z":
+                        enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                    default:
+                        enUrlString.append(character)
+                    }
+                     */
+                }
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio)
+                newImageGallery.galleryContents.append(newGalleryContent)
+            }
+            imageGallery = newImageGallery
+            isImageGalleryEncrypted = true
+        }
+        return true
+    }
+    
+    private func decrypt() -> Bool {
+        //if !isImageGalleryDecrypted {
+            var newImageGallery = ImageGalleryModel(title: "Gallery")
+            newImageGallery.galleryPW = galleryPW!
+            newImageGallery.galleryEN = galleryEN!
+            
+            for galleryContent in imageGallery.galleryContents {
+                let pwLength = UInt32(galleryPW!.count)
+                var deUrlString = ""
+                for character in galleryContent.url {
+                    guard let uniCode = UnicodeScalar(String(character)) else {
+                        return false
+                    }
+                    guard let newUniCode = UnicodeScalar(uniCode.value-pwLength) else {
+                        return false
+                    }
+                    deUrlString.append(String(newUniCode))
+                    /*
+                    switch uniCode {
+                    case "A"..<"Z","a"..<"z":
+                        enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                    default:
+                        enUrlString.append(character)
+                    }
+                     */
+                }
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio)
+                newImageGallery.galleryContents.append(newGalleryContent)
+            }
+            imageGallery = newImageGallery
+            //isImageGalleryDecrypted = true
+        //}
+        return true
+    }
+    
+    
+    
     @IBAction func shuffle(_ sender: UIBarButtonItem) {
         showOrder = imageGallery.determineShowOrder(random: true)
         refreshImageCells()
@@ -123,6 +212,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
 
         // Register cell classes
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
@@ -179,7 +270,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         
         // Configure the cell
         if let imageCell = cell as? ImageGalleryCollectionViewCell {
-            imageCell.backgroundImageUrl = imageGallery.galleryContents[showOrderCell].url
+            if let url = URL(string: imageGallery.galleryContents[showOrderCell].url) {
+                imageCell.backgroundImageUrl = url
+            }
         }
     
         return cell
@@ -197,7 +290,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     self.imageGallery.galleryContents.remove(at: showIndex)
                     self.showOrder = self.imageGallery.determineShowOrder()
                     collectionView.deleteItems(at: [indexPath])
-                    self.save()
+                    //self.save()
                     self.refreshImageCells()
                 }
             })
@@ -207,7 +300,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 if self.imageGallery.galleryContents.count > 0 {
                     let showIndex = self.showOrder[indexPath.row]
                     let imageURL = self.imageGallery.galleryContents[showIndex].url
-                    UIPasteboard.general.url = imageURL
+                    
+                    UIPasteboard.general.string = imageURL
                 }
             })
             
@@ -235,7 +329,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     
     private func dragItems(at indexPath: IndexPath) -> [UIDragItem] {
-        let nsUrlItem = imageGallery.galleryContents[indexPath.item].url as NSURL
+        let nsUrlItem = imageGallery.galleryContents[indexPath.item].url as NSString
         let dragItem = UIDragItem(itemProvider: NSItemProvider(object: nsUrlItem))
         dragItem.localObject = imageGallery.galleryContents[indexPath.item]
         return [dragItem]
@@ -271,7 +365,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         imageGallery.galleryContents.insert(imageUrlCollectionItem, at: destinationIndexPath.item)
                         collectionView.deleteItems(at: [sourceIndexPath])
                         collectionView.insertItems(at: [destinationIndexPath])
-                        save()
+                        //save()
                     })
                     coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
                     
@@ -280,20 +374,21 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             else {
                 let placeholderContext = coordinator.drop(item.dragItem, to: UICollectionViewDropPlaceholder(insertionIndexPath: destinationIndexPath, reuseIdentifier: "DropPlaceHolderCell"))
                 
-                item.dragItem.itemProvider.loadObject(ofClass: NSURL.self) { (provider, error) in
-                    if let url = provider as? URL {
-                        
-                        getImageFromURL(url: url, completion: {[weak self] (image) in
-                            if let image = image {
-                                placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
-                                    self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url, aspectRatio: image.size.height/image.size.width), at: insertionIndexPath.item)
-                                    self?.save()
-                                })
-                            }
-                            else {
-                                placeholderContext.deletePlaceholder()
-                            }
-                        })
+                item.dragItem.itemProvider.loadObject(ofClass: NSString.self) { (provider, error) in
+                    if let urlString = provider as? String {
+                        if let url = URL(string: urlString){
+                            getImageFromURL(url: url, completion: {[weak self] (image) in
+                                if let image = image {
+                                    placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
+                                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: urlString, aspectRatio: image.size.height/image.size.width), at: insertionIndexPath.item)
+                                        //self?.save()
+                                    })
+                                }
+                                else {
+                                    placeholderContext.deletePlaceholder()
+                                }
+                            })
+                        }
                         /*
                         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                             let urlContents = try? Data(contentsOf: url.imageURL)
@@ -329,19 +424,25 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 {
                     let galleryIndex = showOrder[collectionViewIndex.item]
                     let imageGalleryContent = imageGallery.galleryContents[galleryIndex]
-                    imageVC.imageURL = imageGalleryContent.url
-                    self.document?.close()
+                    if let url = URL(string: imageGalleryContent.url) {
+                        imageVC.imageURL = url
+                    }
+                    //save()
+                    //self.document?.close()
                 }
             }
         }
         if segue.identifier == "showSecurityOptions" {
             let securityVC = segue.destination as! SecurityOptionsViewController
             securityVC.delegate = self
+            //save()
+            //self.document?.close()
         }
     }
     
-    func doSomethingWith(data: String) {
-        galleryPW = data
+    func doSomethingWith(pw: String, isEN: Bool) {
+        galleryPW = pw
+        galleryEN = isEN
     }
     
     // Add new collection view cell and paste image in PasteBoard
@@ -352,10 +453,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 
                 getImageFromURL(url: url, completion: { [weak self] (image) in
                     if let image = image {
-                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url,aspectRatio: image.size.height/image.size.width), at: 0)
+                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString,aspectRatio: image.size.height/image.size.width), at: 0)
                         self?.showOrder.append(self?.showOrder.count ?? 0)
                         self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
-                        self?.save()
+                        //self?.save()
                     }
                     else {
                         print("Not an image")
@@ -401,7 +502,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             imageGallery.galleryContents.remove(at: showIndex)
             showOrder = imageGallery.determineShowOrder()
             collectionView.deleteItems(at: [IndexPath(row: 0, section: 0)])
-            save()
+            //save()
             refreshImageCells()
         }
     }

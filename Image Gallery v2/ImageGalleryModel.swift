@@ -13,16 +13,18 @@ struct ImageGalleryModel: Codable {
     
     var galleryTitle: String
     var galleryPW: String
+    var galleryEN: Bool
     var galleryContents = [galleryContent]()
     
     struct galleryContent: Codable {
-        let url: URL
+        let url: String
         let aspectRatio: CGFloat
     }
     
     init(title: String) {
         galleryTitle = title
         galleryPW = ""
+        galleryEN = false
         galleryContents = []
     }
     

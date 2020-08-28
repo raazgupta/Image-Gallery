@@ -9,19 +9,26 @@
 import UIKit
 
 protocol SecurityOptionsViewControllerDelegate: NSObjectProtocol {
-    func doSomethingWith(data: String)
+    func doSomethingWith(pw: String, isEN: Bool)
 }
 
-class SecurityOptionsViewController: UIViewController {
+class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 
     weak var delegate: SecurityOptionsViewControllerDelegate?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
+        passwordText.delegate = self
     }
+    
     
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var encryptFile: UISwitch!
@@ -41,7 +48,7 @@ class SecurityOptionsViewController: UIViewController {
     @IBAction func apply(_ sender: UIButton) {
         if passwordText.text != "" {
             if let delegate = delegate {
-                delegate.doSomethingWith(data: passwordText.text!)
+                delegate.doSomethingWith(pw: passwordText.text!, isEN: encryptFile.isOn)
             }
         }
         _ = navigationController?.popViewController(animated: true)

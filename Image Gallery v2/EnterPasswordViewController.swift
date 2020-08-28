@@ -12,20 +12,32 @@ protocol EnterPasswordViewContollerDelegate: NSObjectProtocol {
     func passwordResult(showImages: Bool, showEnterPassword: Bool)
 }
 
-class EnterPasswordViewController: UIViewController {
+class EnterPasswordViewController: UIViewController, UITextFieldDelegate {
 
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        checkPassword()
+        return true
+    }
+    
     weak var delegate: EnterPasswordViewContollerDelegate?
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var enterPasswordLabel: UILabel!
+    
     var correctPassword: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        passwordText.delegate = self
     }
     
     @IBAction func submit(_ sender: UIButton) {
+        checkPassword()
+    }
+    
+    func checkPassword(){
         if let pText = passwordText.text {
             if let cText = correctPassword {
                 if pText == cText {
@@ -54,3 +66,4 @@ class EnterPasswordViewController: UIViewController {
     */
 
 }
+
