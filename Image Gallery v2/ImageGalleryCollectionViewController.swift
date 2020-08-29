@@ -63,15 +63,22 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         if self.showEnterPassword == false && self.showImages == false {
             self.dismiss(animated: true)
         }
+        /*
         else if self.showImages == true {
             self.showOrder = self.imageGallery.determineShowOrder(random: false)
             //self.refreshImageCells()
         }
+         */
     }
     
     func passwordResult(showImages: Bool, showEnterPassword: Bool) {
         self.showImages = showImages
         self.showEnterPassword = showEnterPassword
+        /*
+        if showImages == true {
+            showOrder = imageGallery.determineShowOrder(random: false)
+        }
+         */
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -178,20 +185,13 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         return true
     }
     
-    
-    
-    @IBAction func shuffle(_ sender: UIBarButtonItem) {
-        showOrder = imageGallery.determineShowOrder(random: true)
-        refreshImageCells()
-    }
-    
     // Doing Collection View things
     
     @IBOutlet weak var imageGalleryView: UICollectionView!
     
     //var imageUrlCollection: [(url: URL, aspectRatio: CGFloat)] = []
     var imageGallery: ImageGalleryModel = ImageGalleryModel(title: "Gallery")
-    var showOrder: [Int] = []
+    //var showOrder: [Int] = []
     var imageCellWidth: CGFloat = 180.0
     
     @IBAction func scaleCells(_ sender: UIPinchGestureRecognizer) {
@@ -261,16 +261,21 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return showOrder.count
+        if showImages {
+            return imageGallery.galleryContents.count
+        }
+        else {
+            return 0
+        }
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath)
-        let showOrderCell = showOrder[indexPath.item]
+        //let showOrderCell = showOrder[indexPath.item]
         
         // Configure the cell
         if let imageCell = cell as? ImageGalleryCollectionViewCell {
-            if let url = URL(string: imageGallery.galleryContents[showOrderCell].url) {
+            if let url = URL(string: imageGallery.galleryContents[indexPath.item].url) {
                 imageCell.backgroundImageUrl = url
             }
         }
@@ -286,9 +291,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             // Press image to delete
             let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
                 if self.imageGallery.galleryContents.count > 0 {
-                    let showIndex = self.showOrder[indexPath.row]
-                    self.imageGallery.galleryContents.remove(at: showIndex)
-                    self.showOrder = self.imageGallery.determineShowOrder()
+                    //let showIndex = self.showOrder[indexPath.row]
+                    self.imageGallery.galleryContents.remove(at: indexPath.row)
+                    //self.showOrder = self.imageGallery.determineShowOrder()
                     collectionView.deleteItems(at: [indexPath])
                     //self.save()
                     self.refreshImageCells()
@@ -298,8 +303,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             // Press image to copy URL
             let copyURL = UIAction(title: "Copy", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil, handler: { action in
                 if self.imageGallery.galleryContents.count > 0 {
-                    let showIndex = self.showOrder[indexPath.row]
-                    let imageURL = self.imageGallery.galleryContents[showIndex].url
+                    //let showIndex = self.showOrder[indexPath.row]
+                    let imageURL = self.imageGallery.galleryContents[indexPath.row].url
                     
                     UIPasteboard.general.string = imageURL
                 }
@@ -311,8 +316,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let showOrderCell = showOrder[indexPath.item]
-        return CGSize(width: imageCellWidth, height: imageCellWidth * imageGallery.galleryContents[showOrderCell].aspectRatio)
+        //let showOrderCell = showOrder[indexPath.item]
+        return CGSize(width: imageCellWidth, height: imageCellWidth * imageGallery.galleryContents[indexPath.item].aspectRatio)
     }
 
     
@@ -422,8 +427,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             if let imageVC = segue.destination.contents as? ImageViewController {
                 if let collectionViewIndices = collectionView?.indexPathsForSelectedItems, let collectionViewIndex = collectionViewIndices.first
                 {
-                    let galleryIndex = showOrder[collectionViewIndex.item]
-                    let imageGalleryContent = imageGallery.galleryContents[galleryIndex]
+                    //let galleryIndex = showOrder[collectionViewIndex.item]
+                    let imageGalleryContent = imageGallery.galleryContents[collectionViewIndex.item]
                     if let url = URL(string: imageGalleryContent.url) {
                         imageVC.imageURL = url
                     }
@@ -437,6 +442,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             securityVC.delegate = self
             //save()
             //self.document?.close()
+        }
+        if segue.identifier == "shuffleImages" {
+            let randomVC = segue.destination as! RandomImageGalleryCollectionViewController
+            randomVC.imageGallery = imageGallery
+            randomVC.showOrder = imageGallery.determineShowOrder(random: true)
         }
     }
     
@@ -454,8 +464,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 getImageFromURL(url: url, completion: { [weak self] (image) in
                     if let image = image {
                         self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString,aspectRatio: image.size.height/image.size.width), at: 0)
-                        self?.showOrder.append(self?.showOrder.count ?? 0)
+                        //self?.showOrder.insert(0, at: 0)
                         self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
+                        self?.refreshImageCells()
                         //self?.save()
                     }
                     else {
@@ -498,9 +509,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     @IBAction func undoImageAdd(_ sender: Any) {
         if imageGallery.galleryContents.count > 0 {
-            let showIndex = showOrder[0]
-            imageGallery.galleryContents.remove(at: showIndex)
-            showOrder = imageGallery.determineShowOrder()
+            //let showIndex = showOrder[0]
+            imageGallery.galleryContents.remove(at: 0)
+            //showOrder = imageGallery.determineShowOrder()
             collectionView.deleteItems(at: [IndexPath(row: 0, section: 0)])
             //save()
             refreshImageCells()
