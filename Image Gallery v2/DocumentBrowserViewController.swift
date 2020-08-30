@@ -61,7 +61,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didImportDocumentAt sourceURL: URL, toDestinationURL destinationURL: URL) {
         // Present the Document View Controller for the new newly created document
-        presentDocument(at: destinationURL)
+        presentDocument(at: destinationURL, isNewDocument: true)
     }
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, failedToImportDocumentAt documentURL: URL, error: Error?) {
@@ -79,7 +79,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     
     // MARK: Document Presentation
     
-    func presentDocument(at documentURL: URL) {
+    func presentDocument(at documentURL: URL, isNewDocument: Bool = false) {
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let pathExt = documentURL.pathExtension
         //let uti: String? = (try? documentURL.resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
@@ -88,6 +88,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
             let documentVC = storyBoard.instantiateViewController(withIdentifier: "DocumentMVC")
             if let imageGalleryCollectionViewController = documentVC.contents as? ImageGalleryCollectionViewController {
                 imageGalleryCollectionViewController.document = ImageGalleryDocument(fileURL: documentURL)
+                imageGalleryCollectionViewController.isNewDocument = isNewDocument
             }
             documentVC.modalPresentationStyle = .fullScreen
             present(documentVC, animated: true)

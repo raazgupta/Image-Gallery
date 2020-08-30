@@ -25,6 +25,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     //var isImageGalleryDecrypted = false
     var isImageGalleryEncrypted = false
     var isDocumentOpen = false
+    var isNewDocument = false
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -34,28 +35,49 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 if success {
                     self.isDocumentOpen = true
                     self.imageGallery.galleryTitle = self.document?.localizedName ?? "Gallery"
-                    self.imageGallery = self.document?.imageGallery ?? ImageGalleryModel(title: "Gallery")
                     
-                    if self.imageGallery.galleryPW != "" && self.imageGallery.galleryEN == true {
-                        self.galleryPW = self.imageGallery.galleryPW
-                        self.galleryEN = self.imageGallery.galleryEN
-                        self.galleryEN = self.decrypt()
-                    }
-                    
-                    if self.imageGallery.galleryPW != "" {
+                    let currentImageGallery = self.document?.imageGallery
+                    if let imageGallery = currentImageGallery {
+                        self.imageGallery = imageGallery
                         
-                        if self.showEnterPassword {
-                            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-                            let enterPasswordVC = storyBoard.instantiateViewController(withIdentifier: "enterPassword") as! EnterPasswordViewController
-                            enterPasswordVC.delegate = self
-                            enterPasswordVC.correctPassword = self.imageGallery.galleryPW
-                            enterPasswordVC.modalPresentationStyle = .fullScreen
-                            self.present(enterPasswordVC,animated: true)
+                        if self.imageGallery.galleryPW != "" && self.imageGallery.galleryEN == true {
+                            self.galleryPW = self.imageGallery.galleryPW
+                            self.galleryEN = self.imageGallery.galleryEN
+                            self.galleryEN = self.decrypt()
+                        }
+                        
+                        if self.imageGallery.galleryPW != "" {
+                            
+                            if self.showEnterPassword {
+                                let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+                                let enterPasswordVC = storyBoard.instantiateViewController(withIdentifier: "enterPassword") as! EnterPasswordViewController
+                                enterPasswordVC.delegate = self
+                                enterPasswordVC.correctPassword = self.imageGallery.galleryPW
+                                enterPasswordVC.modalPresentationStyle = .fullScreen
+                                self.present(enterPasswordVC,animated: true)
+                            }
+                        }
+                        else {
+                            self.showImages = true
                         }
                     }
                     else {
-                        self.showImages = true
+                        if self.isNewDocument {
+                            self.imageGallery = ImageGalleryModel(title: "Gallery")
+                            self.showImages = true
+                        }
+                        else {
+                            let alert = UIAlertController(title: "Unable to read file", message: "The app is unable to read this file format", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "I will try again another way!", style: .default, handler: {(alert: UIAlertAction!) in
+                                self.dismiss(animated: true)
+                            }))
+                            self.present(alert, animated: true)
+                        
+                        }
                     }
+                    
+                    
+                    
                 }
             }
         }
