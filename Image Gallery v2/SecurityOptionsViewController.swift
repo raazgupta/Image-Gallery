@@ -46,12 +46,26 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
 
     
     @IBAction func apply(_ sender: UIButton) {
+        /*
         if passwordText.text != "" {
             if let delegate = delegate {
                 delegate.doSomethingWith(pw: passwordText.text!, isEN: encryptFile.isOn)
+                _ = navigationController?.popViewController(animated: true)
             }
         }
-        _ = navigationController?.popViewController(animated: true)
+         */
+        if passwordText.text == "" && encryptFile.isOn {
+            let alert = UIAlertController(title: "Encrypt without Password", message: "To encrypt, you must also set password.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default))
+            present(alert, animated: true)
+        }
+        else {
+            if let delegate = delegate {
+                delegate.doSomethingWith(pw: passwordText.text!, isEN: encryptFile.isOn)
+                _ = navigationController?.popViewController(animated: true)
+            }
+        }
+        
     }
     
     

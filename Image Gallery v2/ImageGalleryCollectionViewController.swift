@@ -120,6 +120,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             if galleryEN == true {
                 imageGallery.galleryEN = encrypt()
             }
+            else {
+                imageGallery.galleryEN = galleryEN
+            }
         }
         
         document?.imageGallery = imageGallery
