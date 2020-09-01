@@ -10,9 +10,7 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate, EnterPasswordViewContollerDelegate {
-    
-    
+class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate, EnterPasswordViewContollerDelegate, RandomImageGalleryCollectionViewControllerDelegate {
     
     // Doing Document Browser View Controller things
     
@@ -113,19 +111,24 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     @IBAction func save() {
         
+        var enImageGallery: ImageGalleryModel?
         if let galleryPW = galleryPW {
             imageGallery.galleryPW = galleryPW
         }
         if let galleryEN = galleryEN, let _ = galleryPW {
+            imageGallery.galleryEN = galleryEN
             if galleryEN == true {
-                imageGallery.galleryEN = encrypt()
+                enImageGallery = encrypt()
+                document?.imageGallery = enImageGallery
             }
             else {
-                imageGallery.galleryEN = galleryEN
+                document?.imageGallery = imageGallery
             }
         }
+        else {
+            document?.imageGallery = imageGallery
+        }
         
-        document?.imageGallery = imageGallery
         if document?.imageGallery != nil {
             document?.updateChangeCount(.done)
         }
@@ -139,9 +142,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         }
     }
     
-    private func encrypt() -> Bool{
+    private func encrypt() -> ImageGalleryModel?{
         
-        if !isImageGalleryEncrypted {
+        //if !isImageGalleryEncrypted {
             var newImageGallery = ImageGalleryModel(title: "Gallery")
             newImageGallery.galleryPW = galleryPW!
             newImageGallery.galleryEN = galleryEN!
@@ -151,10 +154,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 var enUrlString = ""
                 for character in galleryContent.url {
                     guard let uniCode = UnicodeScalar(String(character)) else {
-                        return false
+                        return nil
                     }
                     guard let newUniCode = UnicodeScalar(uniCode.value+pwLength) else {
-                        return false
+                        return nil
                     }
                     enUrlString.append(String(newUniCode))
                     /*
@@ -169,10 +172,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio)
                 newImageGallery.galleryContents.append(newGalleryContent)
             }
-            imageGallery = newImageGallery
-            isImageGalleryEncrypted = true
-        }
-        return true
+            //imageGallery = newImageGallery
+            //isImageGalleryEncrypted = true
+        //}
+        return newImageGallery
     }
     
     private func decrypt() -> Bool {
@@ -308,7 +311,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         return cell
     }
     
-
+    // Delegate method for Random Image Gallery used to delete image in master view
+    func deleteImage(showIndex: Int) {
+        imageGallery.galleryContents.remove(at: showIndex)
+    }
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil){ action in
@@ -472,12 +478,14 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             let randomVC = segue.destination as! RandomImageGalleryCollectionViewController
             randomVC.imageGallery = imageGallery
             randomVC.showOrder = imageGallery.determineShowOrder(random: true)
+            randomVC.delegate = self
         }
     }
     
     func doSomethingWith(pw: String, isEN: Bool) {
         galleryPW = pw
         galleryEN = isEN
+        save()
     }
     
     // Add new collection view cell and paste image in PasteBoard
@@ -491,8 +499,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString,aspectRatio: image.size.height/image.size.width), at: 0)
                         //self?.showOrder.insert(0, at: 0)
                         self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
+                        self?.save()
                         self?.refreshImageCells()
-                        //self?.save()
                     }
                     else {
                         print("Not an image")

@@ -31,6 +31,15 @@ class EnterPasswordViewController: UIViewController, UITextFieldDelegate {
 
         // Do any additional setup after loading the view.
         passwordText.delegate = self
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard(_:)))
+        self.view.addGestureRecognizer(tapGesture)
+        
+        passwordText.becomeFirstResponder()
+    }
+    
+    @objc func dismissKeyboard(_ sender: UITapGestureRecognizer) {
+        passwordText.resignFirstResponder()
     }
     
     @IBAction func submit(_ sender: UIButton) {

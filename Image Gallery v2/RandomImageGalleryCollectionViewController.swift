@@ -10,6 +10,10 @@ import UIKit
 
 private let reuseIdentifier = "ImageCell"
 
+protocol RandomImageGalleryCollectionViewControllerDelegate: NSObjectProtocol {
+    func deleteImage(showIndex: Int)
+}
+
 class RandomImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var imageGallery: ImageGalleryModel?
@@ -18,6 +22,7 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     var flowLayout: UICollectionViewFlowLayout? {
         return collectionView?.collectionViewLayout as? UICollectionViewFlowLayout
     }
+    weak var delegate: RandomImageGalleryCollectionViewControllerDelegate?
     
     @IBAction func scaleCells(_ sender: UIPinchGestureRecognizer) {
         if sender.state == .ended {
@@ -85,6 +90,48 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
         }
     
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil){ action in
+            
+            // Press image to delete
+            
+            let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
+                if let imageGallery = self.imageGallery, let showOrder = self.showOrder {
+                    if imageGallery.galleryContents.count > 0 {
+                        let showIndex = showOrder[indexPath.row]
+                        self.imageGallery!.galleryContents.remove(at: showIndex)
+                        //let showItemToDelete = self.showOrder![showIndex]
+                        self.showOrder!.remove(at: indexPath.row)
+                        for i in 0..<self.showOrder!.count {
+                            if self.showOrder![i] > showIndex{
+                                self.showOrder![i] = self.showOrder![i] - 1
+                            }
+                        }
+                        collectionView.deleteItems(at: [indexPath])
+                        self.delegate?.deleteImage(showIndex: showIndex)
+                        self.refreshImageCells()
+                    }
+                }
+            })
+            
+            
+            // Press image to copy URL
+            let copyURL = UIAction(title: "Copy", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil, handler: { action in
+                if let imageGallery = self.imageGallery {
+                    if imageGallery.galleryContents.count > 0 {
+                        //let showIndex = self.showOrder[indexPath.row]
+                        let imageURL = imageGallery.galleryContents[indexPath.row].url
+                        
+                        UIPasteboard.general.string = imageURL
+                    }
+                }
+            })
+            
+            return UIMenu(title: "", image: nil, identifier: nil, children: [copyURL, delete])
+        }
+        return configuration
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

@@ -27,8 +27,14 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
 
         // Do any additional setup after loading the view.
         passwordText.delegate = self
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard(_:)))
+        self.view.addGestureRecognizer(tapGesture)
     }
     
+    @objc func dismissKeyboard(_ sender: UITapGestureRecognizer) {
+        passwordText.resignFirstResponder()
+    }
     
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var encryptFile: UISwitch!
@@ -56,6 +62,11 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
          */
         if passwordText.text == "" && encryptFile.isOn {
             let alert = UIAlertController(title: "Encrypt without Password", message: "To encrypt, you must also set password.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default))
+            present(alert, animated: true)
+        }
+        else if !passwordText.isHidden && passwordText.text == "" {
+            let alert = UIAlertController(title: "Empty Password", message: "Password field is empty", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Ok", style: .default))
             present(alert, animated: true)
         }
