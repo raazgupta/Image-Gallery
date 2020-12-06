@@ -533,9 +533,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
     
     private func presentBadWarning() {
-        let alert = UIAlertController(title: "Image transfer failed", message: "Unable to get Image from URL", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Image transfer failed", message: "Unable to get Image from URL. Close this view, tap and hold until you see the Paste option.", preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(title: "I will try again another way!", style: .default))
+        alert.addAction(UIAlertAction(title: "Ok", style: .default))
         
         present(alert, animated: true)
     }

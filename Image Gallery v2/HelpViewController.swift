@@ -10,6 +10,15 @@ import UIKit
 
 class HelpViewController: UIViewController {
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //Round the corners
+        helpText.layer.masksToBounds = true
+        helpText.layer.cornerRadius = 10.0
+        helpText.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
+        doneButton.layer.cornerRadius = 10.0
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,12 +39,15 @@ class HelpViewController: UIViewController {
         let aString2 = NSMutableAttributedString(string: " button to store the image. You can tap on an image Thumbnail to view the image.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString2)
         
+        let aString5 = NSMutableAttributedString(string: "Another way to save images is as follows. When you open the app, tap and hold on a blank area of the screen. You will see the Paste option. Tap on Paste to save the images in that folder.\n",attributes: attributes as [NSAttributedString.Key : Any])
+        aString1.append(aString5)
+        
         let imageAttachment2 = NSTextAttachment()
         imageAttachment2.image = UIImage(systemName:"square.stack.fill")
         let imageString2 = NSAttributedString(attachment: imageAttachment2)
         aString1.append(imageString2)
         
-        let aString3 = NSMutableAttributedString(string: " button will shuffle the images.\n",attributes: attributes as [NSAttributedString.Key : Any])
+        let aString3 = NSMutableAttributedString(string: " button will show your images shuffled in a random order.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString3)
         
         let imageAttachment3 = NSTextAttachment()
@@ -46,13 +58,21 @@ class HelpViewController: UIViewController {
         let aString4 = NSMutableAttributedString(string: " button will delete the top left image.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString4)
         
-        let aString5 = NSMutableAttributedString(string: "Another way to save images is as follows. When you open the app, tap and hold on a blank area of the screen. You will see the Paste option. Tap on Paste to save the images in that folder.\n",attributes: attributes as [NSAttributedString.Key : Any])
-        aString1.append(aString5)
+        let imageAttachment6 = NSTextAttachment()
+        imageAttachment6.image = UIImage(systemName:"lock.fill")
+        let imageString6 = NSAttributedString(attachment: imageAttachment6)
+        aString1.append(imageString6)
+        
+        let aString6 = NSMutableAttributedString(string: " button will take you to the Security Settings view. You can set a password to open this file and also encrypt the contents of the file.\n",attributes: attributes as [NSAttributedString.Key : Any])
+        aString1.append(aString6)
+        
+        
         
         helpText.attributedText = aString1
     }
     
     @IBOutlet weak var helpText: UITextView!
+    @IBOutlet weak var doneButton: UIButton!
     
     @IBAction func done(_ sender: UIButton) {
         dismiss(animated: true)

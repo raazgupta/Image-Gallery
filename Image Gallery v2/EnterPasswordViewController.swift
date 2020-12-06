@@ -23,8 +23,16 @@ class EnterPasswordViewController: UIViewController, UITextFieldDelegate {
     weak var delegate: EnterPasswordViewContollerDelegate?
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var enterPasswordLabel: UILabel!
+    @IBOutlet weak var submitButton: UIButton!
+    @IBOutlet weak var cancelButton: UIButton!
     
     var correctPassword: String?
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        submitButton.layer.cornerRadius = 10.0
+        cancelButton.layer.cornerRadius = 10.0
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -21,6 +21,10 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
 
     weak var delegate: SecurityOptionsViewControllerDelegate?
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        applyButton.layer.cornerRadius = 10.0
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +42,7 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var encryptFile: UISwitch!
+    @IBOutlet weak var applyButton: UIButton!
     
     
     @IBAction func setPassword(_ sender: UISwitch) {

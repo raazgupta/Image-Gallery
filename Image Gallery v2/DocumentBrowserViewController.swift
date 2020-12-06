@@ -25,8 +25,8 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         browserUserInterfaceStyle = .dark
         view.tintColor = #colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1)
         
-        let settingsButton = UIBarButtonItem(title: "Help", style: .plain, target: self, action: #selector(settingsButton(sender:)))
-        additionalTrailingNavigationBarButtonItems = [settingsButton]
+        let helpButton = UIBarButtonItem(title: "Help", style: .plain, target: self, action: #selector(settingsButton(sender:)))
+        additionalLeadingNavigationBarButtonItems = [helpButton]
         
         // Specify the allowed content types of your application via the Info.plist.
         
