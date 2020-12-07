@@ -253,6 +253,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         // Enble dragging on iphone
         collectionView?.dragInteractionEnabled = true
         
+        self.collectionView.refreshControl = UIRefreshControl()
+        self.collectionView.refreshControl?.addTarget(self, action: #selector(pasteLink), for: .valueChanged)
+        
         
         //imageCellWidth = (collectionView?.bounds.width)! / 2
         
@@ -490,7 +493,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     // Add new collection view cell and paste image in PasteBoard
     @IBAction func addPaste(_ sender: Any) {
-        
+        pasteLink()
+    }
+    
+    @objc private func pasteLink() {
         if UIPasteboard.general.hasURLs {
             if let url = UIPasteboard.general.url {
                 
@@ -528,6 +534,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         else {
             print ("No URL")
             presentBadWarning()
+        }
+        
+        DispatchQueue.main.async {
+            self.collectionView.refreshControl?.endRefreshing()
         }
         
     }

@@ -119,10 +119,10 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
             
             // Press image to copy URL
             let copyURL = UIAction(title: "Copy", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil, handler: { action in
-                if let imageGallery = self.imageGallery {
+                if let imageGallery = self.imageGallery, let showOrder = self.showOrder {
                     if imageGallery.galleryContents.count > 0 {
-                        //let showIndex = self.showOrder[indexPath.row]
-                        let imageURL = imageGallery.galleryContents[indexPath.row].url
+                        let showIndex = showOrder[indexPath.row]
+                        let imageURL = imageGallery.galleryContents[showIndex].url
                         
                         UIPasteboard.general.string = imageURL
                     }
