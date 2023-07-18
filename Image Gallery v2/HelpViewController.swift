@@ -27,7 +27,7 @@ class HelpViewController: UIViewController {
         let font = UIFont(name: "American Typewriter", size: 18)
         let attributes = [NSAttributedString.Key.font: font]
         let aString1 = NSMutableAttributedString(string: """
-        Welcome to the Image Keeper App. This app can be used to store image links from the web or image files. If you are saving an image from the web, this app provides the option to store the web link instead of the image file to save disk space. This allows you to store a large number of web images without worrying about disk space.\n
+        Welcome to the Image Store App. This app can be used to store image links from the web or image files. If you are saving an image from the web, this app provides the option to store the web link instead of the image file to save disk space. This allows you to store a large number of web images without worrying about disk space.\n
         For storing web image links, start by  tapping: Create Document. On your web browser, tap and hold image until Copy option is displayed. Tap Copy. In the app,  tap on the document that you have created, tap the
         """,attributes: attributes as [NSAttributedString.Key : Any])
         
