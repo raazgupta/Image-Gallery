@@ -19,6 +19,7 @@ struct ImageGalleryModel: Codable {
     struct galleryContent: Codable {
         let url: String
         let aspectRatio: CGFloat
+        let imageTitle: String? // Optional
     }
     
     init(title: String) {

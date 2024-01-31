@@ -169,7 +169,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     }
                      */
                 }
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio)
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: nil)
                 newImageGallery.galleryContents.append(newGalleryContent)
             }
             //imageGallery = newImageGallery
@@ -204,7 +204,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     }
                      */
                 }
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio)
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: nil)
                 newImageGallery.galleryContents.append(newGalleryContent)
             }
             imageGallery = newImageGallery
@@ -419,7 +419,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                             getImageFromURL(url: url, completion: {[weak self] (image) in
                                 if let image = image {
                                     placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
-                                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: urlString, aspectRatio: image.size.height/image.size.width), at: insertionIndexPath.item)
+                                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: urlString, aspectRatio: image.size.height/image.size.width, imageTitle: nil), at: insertionIndexPath.item)
                                         //self?.save()
                                     })
                                 }
@@ -496,13 +496,21 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         pasteLink()
     }
     
+    /*
     @objc private func pasteLink() {
         if UIPasteboard.general.hasURLs {
             if let url = UIPasteboard.general.url {
                 
                 getImageFromURL(url: url, completion: { [weak self] (image) in
+                    
+                    defer {
+                        DispatchQueue.main.async {
+                            self?.collectionView.refreshControl?.endRefreshing()
+                        }
+                    }
+                    
                     if let image = image {
-                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString,aspectRatio: image.size.height/image.size.width), at: 0)
+                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString,aspectRatio: image.size.height/image.size.width, imageTitle: nil), at: 0)
                         //self?.showOrder.insert(0, at: 0)
                         self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
                         self?.save()
@@ -534,6 +542,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         else {
             print ("No URL")
             presentBadWarning()
+            DispatchQueue.main.async {
+                self.collectionView.refreshControl?.endRefreshing()
+            }
         }
         
         DispatchQueue.main.async {
@@ -541,6 +552,42 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         }
         
     }
+    */
+    
+    @objc private func pasteLink() {
+        if UIPasteboard.general.hasURLs {
+            if let url = UIPasteboard.general.url {
+                getImageFromURL(url: url, completion: { [weak self] (image) in
+                    DispatchQueue.main.async {
+                        self?.collectionView.refreshControl?.endRefreshing()
+
+                        if let image = image {
+                            self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString, aspectRatio: image.size.height/image.size.width, imageTitle: nil), at: 0)
+                            self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
+                            self?.save()
+                            self?.refreshImageCells()
+                        } else {
+                            print("Not an image")
+                            self?.presentBadWarningAfterDelay()
+                        }
+                    }
+                })
+            }
+        } else {
+            print("No URL")
+            DispatchQueue.main.async {
+                self.collectionView.refreshControl?.endRefreshing()
+                self.presentBadWarningAfterDelay()
+            }
+        }
+    }
+
+    private func presentBadWarningAfterDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.presentBadWarning()
+        }
+    }
+
     
     private func presentBadWarning() {
         let alert = UIAlertController(title: "Image transfer failed", message: "Unable to get Image from URL. Close this view, tap and hold until you see the Paste option.", preferredStyle: .alert)
