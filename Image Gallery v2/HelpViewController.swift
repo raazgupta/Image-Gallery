@@ -31,9 +31,11 @@ class HelpViewController: UIViewController {
         For storing web image links, start by  tapping: Create Document. On your web browser, tap and hold image until Copy option is displayed. Tap Copy. In the app,  tap on the document that you have created, tap the
         """,attributes: attributes as [NSAttributedString.Key : Any])
         
+        let imageString1: NSAttributedString
+        
         let imageAttachment1 = NSTextAttachment()
         imageAttachment1.image = UIImage(systemName:"arrow.down.doc.fill")
-        let imageString1 = NSAttributedString(attachment: imageAttachment1)
+        imageString1 = NSAttributedString(attachment: imageAttachment1)
         aString1.append(imageString1)
         
         let aString2 = NSMutableAttributedString(string: " button to store the image. You can tap on an image Thumbnail to view the image.\n",attributes: attributes as [NSAttributedString.Key : Any])
@@ -42,26 +44,36 @@ class HelpViewController: UIViewController {
         let aString5 = NSMutableAttributedString(string: "Another way to save images is as follows. When you open the app, tap and hold on a blank area of the screen. You will see the Paste option. Tap on Paste to save the images in that folder.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString5)
         
+        let imageString2: NSAttributedString
+       
         let imageAttachment2 = NSTextAttachment()
         imageAttachment2.image = UIImage(systemName:"square.stack.fill")
-        let imageString2 = NSAttributedString(attachment: imageAttachment2)
+        imageString2 = NSAttributedString(attachment: imageAttachment2)
+
         aString1.append(imageString2)
         
         let aString3 = NSMutableAttributedString(string: " button will show your images shuffled in a random order.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString3)
         
+        let imageString3: NSAttributedString
+        
         let imageAttachment3 = NSTextAttachment()
         imageAttachment3.image = UIImage(systemName:"trash")
-        let imageString3 = NSAttributedString(attachment: imageAttachment3)
+        imageString3 = NSAttributedString(attachment: imageAttachment3)
+
         aString1.append(imageString3)
         
         let aString4 = NSMutableAttributedString(string: " button will delete the top left image.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString4)
         
-        let imageAttachment6 = NSTextAttachment()
-        imageAttachment6.image = UIImage(systemName:"lock.fill")
-        let imageString6 = NSAttributedString(attachment: imageAttachment6)
-        aString1.append(imageString6)
+        
+        let imageString5: NSAttributedString
+        
+        let imageAttachment5 = NSTextAttachment()
+        imageAttachment5.image = UIImage(systemName:"lock.fill")
+        imageString5 = NSAttributedString(attachment: imageAttachment5)
+        
+        aString1.append(imageString5)
         
         let aString6 = NSMutableAttributedString(string: " button will take you to the Security Settings view. You can set a password to open this file and also encrypt the contents of the file.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString6)

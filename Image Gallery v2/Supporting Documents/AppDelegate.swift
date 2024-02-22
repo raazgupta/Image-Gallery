@@ -16,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // Set up global navigation bar appearance
+        configureNavigationBarAppearance()
+        
         return true
     }
 
@@ -77,6 +81,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func hideBlankScreen() {
         blankScreenWindow?.isHidden = true
         blankScreenWindow = nil
+    }
+    
+    private func configureNavigationBarAppearance() {
+        // Set the title text color for all navigation bars
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)]
+        
+        // Optional: If you want to change the large title color as well
+        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)]
     }
 
 

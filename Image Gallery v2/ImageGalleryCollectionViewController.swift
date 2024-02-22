@@ -169,7 +169,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     }
                      */
                 }
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: nil)
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: galleryContent.imageTitle, stars: galleryContent.stars, favorite: galleryContent.favorite )
                 newImageGallery.galleryContents.append(newGalleryContent)
             }
             //imageGallery = newImageGallery
@@ -204,7 +204,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     }
                      */
                 }
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: nil)
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: galleryContent.imageTitle, stars: galleryContent.stars, favorite: galleryContent.favorite)
                 newImageGallery.galleryContents.append(newGalleryContent)
             }
             imageGallery = newImageGallery
@@ -238,10 +238,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         return collectionView?.collectionViewLayout as? UICollectionViewFlowLayout
     }
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
 
         // Register cell classes
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
@@ -256,6 +255,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         self.collectionView.refreshControl = UIRefreshControl()
         self.collectionView.refreshControl?.addTarget(self, action: #selector(pasteLink), for: .valueChanged)
         
+        view.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
+        self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         
         //imageCellWidth = (collectionView?.bounds.width)! / 2
         
@@ -419,7 +420,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                             getImageFromURL(url: url, completion: {[weak self] (image) in
                                 if let image = image {
                                     placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
-                                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: urlString, aspectRatio: image.size.height/image.size.width, imageTitle: nil), at: insertionIndexPath.item)
+                                        self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: urlString, aspectRatio: image.size.height/image.size.width, imageTitle: nil, stars: nil, favorite: nil), at: insertionIndexPath.item)
                                         //self?.save()
                                     })
                                 }
@@ -562,7 +563,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         self?.collectionView.refreshControl?.endRefreshing()
 
                         if let image = image {
-                            self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString, aspectRatio: image.size.height/image.size.width, imageTitle: nil), at: 0)
+                            self?.imageGallery.galleryContents.insert(ImageGalleryModel.galleryContent(url: url.absoluteString, aspectRatio: image.size.height/image.size.width, imageTitle: nil, stars: nil, favorite: nil), at: 0)
                             self?.collectionView?.insertItems(at: [IndexPath(row: 0, section: 0)])
                             self?.save()
                             self?.refreshImageCells()

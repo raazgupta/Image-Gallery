@@ -92,6 +92,7 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
         return cell
     }
     
+    
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil){ action in
             

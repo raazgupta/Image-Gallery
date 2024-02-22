@@ -23,7 +23,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         
         // Update the style of the UIDocumentBrowserViewController
         browserUserInterfaceStyle = .dark
-        view.tintColor = #colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1)
+        view.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         
         let helpButton = UIBarButtonItem(title: "Help", style: .plain, target: self, action: #selector(settingsButton(sender:)))
         additionalTrailingNavigationBarButtonItems = [helpButton]
@@ -95,7 +95,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         }
         
         if (pathExt == "jpeg" || pathExt == "png"){
-            let imageDocumentVC = storyBoard.instantiateViewController(identifier: "ImageDocumentMVC")
+            let imageDocumentVC = storyBoard.instantiateViewController(withIdentifier: "ImageDocumentMVC")
             if let imageViewController = imageDocumentVC.contents as? ImageViewController2 {
                 imageViewController.document = ImageDocument(fileURL: documentURL)
             }
