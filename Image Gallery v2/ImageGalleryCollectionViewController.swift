@@ -10,7 +10,7 @@ import UIKit
 
 private let reuseIdentifier = "Cell"
 
-class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate, EnterPasswordViewContollerDelegate, RandomImageGalleryCollectionViewControllerDelegate {
+class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate, EnterPasswordViewContollerDelegate {
     
     // Doing Document Browser View Controller things
     
@@ -24,6 +24,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     var isImageGalleryEncrypted = false
     var isDocumentOpen = false
     var isNewDocument = false
+    
+    var tappedImageIndex: Int?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -460,13 +462,18 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showImage" {
             if let imageVC = segue.destination.contents as? ImageViewController {
+                imageVC.delegate = self
                 if let collectionViewIndices = collectionView?.indexPathsForSelectedItems, let collectionViewIndex = collectionViewIndices.first
                 {
                     //let galleryIndex = showOrder[collectionViewIndex.item]
+                    self.tappedImageIndex = collectionViewIndex.item
                     let imageGalleryContent = imageGallery.galleryContents[collectionViewIndex.item]
                     if let url = URL(string: imageGalleryContent.url) {
                         imageVC.imageURL = url
                     }
+                    imageVC.imageTitle = imageGalleryContent.imageTitle
+                    imageVC.stars = imageGalleryContent.stars
+                    imageVC.favorite = imageGalleryContent.favorite
                     //save()
                     //self.document?.close()
                 }
@@ -611,4 +618,22 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
 
     
     
+}
+
+extension ImageGalleryCollectionViewController: ImageViewControllerDelegate {
+    func passBackImageDetails(imageTitle: String?, stars: Int?, favorite: Bool?) {
+        if let tappedImageIndex = self.tappedImageIndex {
+            imageGallery.galleryContents[tappedImageIndex].imageTitle = imageTitle
+            imageGallery.galleryContents[tappedImageIndex].stars = stars
+            imageGallery.galleryContents[tappedImageIndex].favorite = favorite
+        }
+    }
+}
+
+extension ImageGalleryCollectionViewController: RandomImageGalleryCollectionViewControllerDelegate{
+    func passBackImageGallery(childImageGallery: ImageGalleryModel?) {
+        if let childImageGallery = childImageGallery {
+            self.imageGallery = childImageGallery
+        }
+    }
 }

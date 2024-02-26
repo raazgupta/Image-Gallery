@@ -19,9 +19,9 @@ struct ImageGalleryModel: Codable {
     struct galleryContent: Codable {
         let url: String
         let aspectRatio: CGFloat
-        let imageTitle: String? // Optional
-        let stars: Int?
-        let favorite: Bool?
+        var imageTitle: String? // Optional
+        var stars: Int?
+        var favorite: Bool?
     }
     
     init(title: String) {

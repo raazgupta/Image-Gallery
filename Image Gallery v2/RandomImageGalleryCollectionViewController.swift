@@ -12,10 +12,13 @@ private let reuseIdentifier = "ImageCell"
 
 protocol RandomImageGalleryCollectionViewControllerDelegate: NSObjectProtocol {
     func deleteImage(showIndex: Int)
+    func passBackImageGallery(childImageGallery: ImageGalleryModel?)
 }
 
 class RandomImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
+    var tappedImageIndex: Int?
+    
     var imageGallery: ImageGalleryModel?
     var showOrder: [Int]?
     var imageCellWidth: CGFloat = 180.0
@@ -147,14 +150,19 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showImage2" {
             if let imageVC = segue.destination.contents as? ImageViewController {
+                imageVC.delegate = self
                 if let collectionViewIndices = collectionView?.indexPathsForSelectedItems, let collectionViewIndex = collectionViewIndices.first
                 {
                     if let showOrder = showOrder, let imageGallery = imageGallery {
+                        self.tappedImageIndex = collectionViewIndex.item
                         let galleryIndex = showOrder[collectionViewIndex.item]
                         let imageGalleryContent = imageGallery.galleryContents[galleryIndex]
                         if let url = URL(string: imageGalleryContent.url) {
                             imageVC.imageURL = url
                         }
+                        imageVC.imageTitle = imageGalleryContent.imageTitle
+                        imageVC.stars = imageGalleryContent.stars
+                        imageVC.favorite = imageGalleryContent.favorite
                     }
 
                 }
@@ -165,6 +173,14 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     @IBAction func shuffle(_ sender: UIBarButtonItem) {
         showOrder = imageGallery?.determineShowOrder(random: true)
         refreshImageCells()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.isMovingFromParent{
+            delegate?.passBackImageGallery(childImageGallery: imageGallery)
+        }
     }
     
 
@@ -199,4 +215,17 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     }
     */
 
+}
+
+extension RandomImageGalleryCollectionViewController: ImageViewControllerDelegate {
+    func passBackImageDetails(imageTitle: String?, stars: Int?, favorite: Bool?) {
+        if let tappedImageIndex = self.tappedImageIndex {
+            if let showOrder = self.showOrder {
+                let galleryIndex = showOrder[tappedImageIndex]
+                imageGallery?.galleryContents[galleryIndex].imageTitle = imageTitle
+                imageGallery?.galleryContents[galleryIndex].stars = stars
+                imageGallery?.galleryContents[galleryIndex].favorite = favorite
+            }
+        }
+    }
 }

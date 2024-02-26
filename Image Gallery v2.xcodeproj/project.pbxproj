@@ -13,6 +13,7 @@
 		AD377D1324F47D3000D0B860 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1224F47D3000D0B860 /* HelpViewController.swift */; };
 		AD377D1524F5CAA300D0B860 /* SecurityOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */; };
 		AD5C24C624F706F700478629 /* EnterPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C24C524F706F700478629 /* EnterPasswordViewController.swift */; };
+		AD6BD35F2B8957C0004E91A7 /* ImageDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6BD35E2B8957C0004E91A7 /* ImageDetailsViewController.swift */; };
 		AD91B72824F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */; };
 		AD99A10F217BD6ED00A288B4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */; };
 		AD99A111217BD6ED00A288B4 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */; };
@@ -34,6 +35,7 @@
 		AD377D1224F47D3000D0B860 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityOptionsViewController.swift; sourceTree = "<group>"; };
 		AD5C24C524F706F700478629 /* EnterPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPasswordViewController.swift; sourceTree = "<group>"; };
+		AD6BD35E2B8957C0004E91A7 /* ImageDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewController.swift; sourceTree = "<group>"; };
 		AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
 		AD99A10B217BD6ED00A288B4 /* Image Keeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Keeper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */,
 				AD99A12B217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift */,
 				AD99A125217BDB3A00A288B4 /* ImageViewController.swift */,
+				AD6BD35E2B8957C0004E91A7 /* ImageDetailsViewController.swift */,
 				AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */,
 				AD99A127217BDB7D00A288B4 /* ImageGalleryModel.swift */,
 				AD99A12D217BDB9900A288B4 /* Utilities.swift */,
@@ -190,6 +193,7 @@
 				AD99A111217BD6ED00A288B4 /* DocumentBrowserViewController.swift in Sources */,
 				AD99A126217BDB3A00A288B4 /* ImageViewController.swift in Sources */,
 				AD99A12A217BDB8600A288B4 /* ImageGalleryCollectionViewController.swift in Sources */,
+				AD6BD35F2B8957C0004E91A7 /* ImageDetailsViewController.swift in Sources */,
 				AD5C24C624F706F700478629 /* EnterPasswordViewController.swift in Sources */,
 				AD99A128217BDB7D00A288B4 /* ImageGalleryModel.swift in Sources */,
 				AD99A10F217BD6ED00A288B4 /* AppDelegate.swift in Sources */,

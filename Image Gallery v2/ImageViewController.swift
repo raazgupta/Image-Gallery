@@ -8,7 +8,17 @@
 
 import UIKit
 
+protocol ImageViewControllerDelegate: AnyObject {
+    func passBackImageDetails(imageTitle: String?, stars: Int?, favorite: Bool?)
+}
+
 class ImageViewController: UIViewController, UIScrollViewDelegate {
+    
+    weak var delegate: ImageViewControllerDelegate?
+    
+    var imageTitle: String?
+    var stars: Int?
+    var favorite: Bool?
 
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
@@ -50,6 +60,9 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         if imageView.image == nil {
             fetchImage()
         }
+        if let imageTitle = imageTitle {
+            title = imageTitle
+        }
     }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -82,9 +95,32 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Title"
+        
         view.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showImageDetails" {
+            if let imageDetailsVC = segue.destination as? ImageDetailsViewController {
+                imageDetailsVC.delegate = self
+                // Pass any necessary data to the ImageDetailsViewController
+                imageDetailsVC.imageTitle = imageTitle
+                imageDetailsVC.stars = stars
+                imageDetailsVC.favorite = favorite
+                
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.isMovingFromParent{
+            delegate?.passBackImageDetails(imageTitle: imageTitle, stars: stars, favorite: favorite)
+        }
+    }
+    
 }
+
+
