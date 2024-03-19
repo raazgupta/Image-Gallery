@@ -70,12 +70,12 @@ class HelpViewController: UIViewController {
         let imageString5: NSAttributedString
         
         let imageAttachment5 = NSTextAttachment()
-        imageAttachment5.image = UIImage(systemName:"lock.fill")
+        imageAttachment5.image = UIImage(systemName:"gear")
         imageString5 = NSAttributedString(attachment: imageAttachment5)
         
         aString1.append(imageString5)
         
-        let aString6 = NSMutableAttributedString(string: " button will take you to the Security Settings view. You can set a password to open this file and also encrypt the contents of the file.\n",attributes: attributes as [NSAttributedString.Key : Any])
+        let aString6 = NSMutableAttributedString(string: " button will take you to the Settings view. You can set a password to open this file, encrypt the contents of the file and set star probabilities.\n",attributes: attributes as [NSAttributedString.Key : Any])
         aString1.append(aString6)
         
         

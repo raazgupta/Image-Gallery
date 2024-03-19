@@ -40,6 +40,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     if let imageGallery = currentImageGallery {
                         self.imageGallery = imageGallery
                         
+                        // Check if starProbabilityValues is nil and initialize it if so
+                        if self.imageGallery.starProbabilityValues == nil {
+                            self.imageGallery.starProbabilityValues = ImageGalleryModel.starProbabilities(star1: 60, star2: 30, star3: 10)
+                        }
+                        
                         if self.imageGallery.galleryPW != "" && self.imageGallery.galleryEN == true {
                             self.galleryPW = self.imageGallery.galleryPW
                             self.galleryEN = self.imageGallery.galleryEN
@@ -150,10 +155,14 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             var newImageGallery = ImageGalleryModel(title: "Gallery")
             newImageGallery.galleryPW = galleryPW!
             newImageGallery.galleryEN = galleryEN!
+            newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
+            newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
+            newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
             
             for galleryContent in imageGallery.galleryContents {
                 let pwLength = UInt32(galleryPW!.count)
                 var enUrlString = ""
+                // encrypt the url
                 for character in galleryContent.url {
                     guard let uniCode = UnicodeScalar(String(character)) else {
                         return nil
@@ -171,7 +180,31 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     }
                      */
                 }
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: galleryContent.imageTitle, stars: galleryContent.stars, favorite: galleryContent.favorite )
+                
+                // encrypt the title
+                var enTitleString = ""
+                if let imageTitle = galleryContent.imageTitle {
+                    for character in imageTitle {
+                        guard let uniCode = UnicodeScalar(String(character)) else {
+                            return nil
+                        }
+                        guard let newUniCode = UnicodeScalar(uniCode.value+pwLength) else {
+                            return nil
+                        }
+                        enTitleString.append(String(newUniCode))
+                        /*
+                         switch uniCode {
+                         case "A"..<"Z","a"..<"z":
+                         enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                         default:
+                         enUrlString.append(character)
+                         }
+                         */
+                    }
+                }
+                
+                
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: enTitleString, stars: galleryContent.stars, favorite: galleryContent.favorite )
                 newImageGallery.galleryContents.append(newGalleryContent)
             }
             //imageGallery = newImageGallery
@@ -185,9 +218,14 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             var newImageGallery = ImageGalleryModel(title: "Gallery")
             newImageGallery.galleryPW = galleryPW!
             newImageGallery.galleryEN = galleryEN!
+            newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
+            newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
+            newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
             
             for galleryContent in imageGallery.galleryContents {
                 let pwLength = UInt32(galleryPW!.count)
+                
+                // decrypt the url
                 var deUrlString = ""
                 for character in galleryContent.url {
                     guard let uniCode = UnicodeScalar(String(character)) else {
@@ -206,7 +244,30 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                     }
                      */
                 }
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: galleryContent.imageTitle, stars: galleryContent.stars, favorite: galleryContent.favorite)
+                
+                //decrypt the title
+                var deTitleString = ""
+                if let imageTitle = galleryContent.imageTitle {
+                    for character in imageTitle {
+                        guard let uniCode = UnicodeScalar(String(character)) else {
+                            return false
+                        }
+                        guard let newUniCode = UnicodeScalar(uniCode.value-pwLength) else {
+                            return false
+                        }
+                        deTitleString.append(String(newUniCode))
+                        /*
+                         switch uniCode {
+                         case "A"..<"Z","a"..<"z":
+                         enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                         default:
+                         enUrlString.append(character)
+                         }
+                         */
+                    }
+                }
+                
+                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: deTitleString, stars: galleryContent.stars, favorite: galleryContent.favorite)
                 newImageGallery.galleryContents.append(newGalleryContent)
             }
             imageGallery = newImageGallery
@@ -260,6 +321,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         view.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(handleDeletedImage), name: .deletedImage, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdatedImageDetails), name: .updatedImageDetals, object: nil)
+        
         //imageCellWidth = (collectionView?.bounds.width)! / 2
         
         // Add button to display gallery table
@@ -269,6 +333,21 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         //NotificationCenter.default.addObserver(self, selector: #selector(refreshImageCells), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         
+    }
+    
+    @objc func handleDeletedImage(notification: Notification) {
+        if let deletedImageURL = notification.userInfo?["deletedURL"] {
+            imageGallery.deleteGalleryContent(byURL: deletedImageURL as! String)
+        }
+    }
+    
+    @objc func handleUpdatedImageDetails(notification: Notification) {
+        if let imageURL = notification.userInfo?["imageURL"] {
+            let imageTitle = notification.userInfo?["imageTitle"]
+            let stars = notification.userInfo?["stars"]
+            let favorite = notification.userInfo?["favorite"]
+            imageGallery.updateGalleryContent(byURL: imageURL as! String, newTitle: imageTitle as? String, newStars: stars as? Int, newFavorite: favorite as? Bool)
+        }
     }
     
     @objc func refreshImageCells() {
@@ -482,6 +561,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         if segue.identifier == "showSecurityOptions" {
             let securityVC = segue.destination as! SecurityOptionsViewController
             securityVC.delegate = self
+            securityVC.star1Probability = imageGallery.starProbabilityValues?.star1 ?? 60.0
+            securityVC.star2Probability = imageGallery.starProbabilityValues?.star2 ?? 30.0
+            securityVC.star3Probability = imageGallery.starProbabilityValues?.star3 ?? 10.0
+            securityVC.galleryPW = imageGallery.galleryPW
+            securityVC.galleryEN = imageGallery.galleryEN
             //save()
             //self.document?.close()
         }
@@ -491,11 +575,24 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             randomVC.showOrder = imageGallery.determineShowOrder(random: true)
             randomVC.delegate = self
         }
+        if segue.identifier == "showSearch" {
+            if let searchVC = segue.destination.contents as? ImageSearchViewController {
+                searchVC.imageGallery = imageGallery
+            }
+        }
     }
     
-    func doSomethingWith(pw: String, isEN: Bool) {
-        galleryPW = pw
+    func doSomethingWith(pwSwitch: Bool, pw: String, isEN: Bool, star1Probability: Float, star2Probability: Float, star3Probability: Float) {
+        if pwSwitch {
+            galleryPW = pw
+        }
+        else {
+            galleryPW = ""
+        }
         galleryEN = isEN
+        imageGallery.starProbabilityValues?.star1 = star1Probability
+        imageGallery.starProbabilityValues?.star2 = star2Probability
+        imageGallery.starProbabilityValues?.star3 = star3Probability
         save()
     }
     
@@ -637,3 +734,10 @@ extension ImageGalleryCollectionViewController: RandomImageGalleryCollectionView
         }
     }
 }
+
+extension Notification.Name {
+    static let deletedImage = Notification.Name("deletedImage")
+    static let updatedImageDetals = Notification.Name("updatedImageDetails")
+}
+
+

@@ -14,6 +14,8 @@
 		AD377D1524F5CAA300D0B860 /* SecurityOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */; };
 		AD5C24C624F706F700478629 /* EnterPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C24C524F706F700478629 /* EnterPasswordViewController.swift */; };
 		AD6BD35F2B8957C0004E91A7 /* ImageDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6BD35E2B8957C0004E91A7 /* ImageDetailsViewController.swift */; };
+		AD6BD3612B93E399004E91A7 /* ImageSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6BD3602B93E399004E91A7 /* ImageSearchViewController.swift */; };
+		AD6BD3632B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6BD3622B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift */; };
 		AD91B72824F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */; };
 		AD99A10F217BD6ED00A288B4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */; };
 		AD99A111217BD6ED00A288B4 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */; };
@@ -36,6 +38,8 @@
 		AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityOptionsViewController.swift; sourceTree = "<group>"; };
 		AD5C24C524F706F700478629 /* EnterPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPasswordViewController.swift; sourceTree = "<group>"; };
 		AD6BD35E2B8957C0004E91A7 /* ImageDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewController.swift; sourceTree = "<group>"; };
+		AD6BD3602B93E399004E91A7 /* ImageSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchViewController.swift; sourceTree = "<group>"; };
+		AD6BD3622B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteredImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
 		AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
 		AD99A10B217BD6ED00A288B4 /* Image Keeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Keeper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD99A10E217BD6ED00A288B4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -82,23 +86,25 @@
 		AD99A10D217BD6ED00A288B4 /* Image Gallery v2 */ = {
 			isa = PBXGroup;
 			children = (
-				AD99A116217BD6ED00A288B4 /* Main.storyboard */,
-				AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */,
-				AD5C24C524F706F700478629 /* EnterPasswordViewController.swift */,
-				AD377D1224F47D3000D0B860 /* HelpViewController.swift */,
+				AD99A11E217BD6F000A288B4 /* Info.plist */,
 				AD377D1024F465A700D0B860 /* BlankScreenViewController.swift */,
 				AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */,
-				AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */,
-				AD377D0E24F346DA00D0B860 /* ImageDocument.swift */,
-				AD99A129217BDB8600A288B4 /* ImageGalleryCollectionViewController.swift */,
-				AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */,
-				AD99A12B217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift */,
-				AD99A125217BDB3A00A288B4 /* ImageViewController.swift */,
+				AD5C24C524F706F700478629 /* EnterPasswordViewController.swift */,
+				AD377D1224F47D3000D0B860 /* HelpViewController.swift */,
 				AD6BD35E2B8957C0004E91A7 /* ImageDetailsViewController.swift */,
-				AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */,
+				AD6BD3602B93E399004E91A7 /* ImageSearchViewController.swift */,
+				AD377D0E24F346DA00D0B860 /* ImageDocument.swift */,
+				AD99A12B217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift */,
+				AD99A129217BDB8600A288B4 /* ImageGalleryCollectionViewController.swift */,
+				AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */,
 				AD99A127217BDB7D00A288B4 /* ImageGalleryModel.swift */,
+				AD99A125217BDB3A00A288B4 /* ImageViewController.swift */,
+				AD377D0C24F33E6300D0B860 /* ImageViewController2.swift */,
+				AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */,
+				AD6BD3622B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift */,
+				AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */,
 				AD99A12D217BDB9900A288B4 /* Utilities.swift */,
-				AD99A11E217BD6F000A288B4 /* Info.plist */,
+				AD99A116217BD6ED00A288B4 /* Main.storyboard */,
 				AD99A124217BDB0500A288B4 /* Supporting Documents */,
 			);
 			path = "Image Gallery v2";
@@ -193,11 +199,13 @@
 				AD99A111217BD6ED00A288B4 /* DocumentBrowserViewController.swift in Sources */,
 				AD99A126217BDB3A00A288B4 /* ImageViewController.swift in Sources */,
 				AD99A12A217BDB8600A288B4 /* ImageGalleryCollectionViewController.swift in Sources */,
+				AD6BD3612B93E399004E91A7 /* ImageSearchViewController.swift in Sources */,
 				AD6BD35F2B8957C0004E91A7 /* ImageDetailsViewController.swift in Sources */,
 				AD5C24C624F706F700478629 /* EnterPasswordViewController.swift in Sources */,
 				AD99A128217BDB7D00A288B4 /* ImageGalleryModel.swift in Sources */,
 				AD99A10F217BD6ED00A288B4 /* AppDelegate.swift in Sources */,
 				AD377D0F24F346DA00D0B860 /* ImageDocument.swift in Sources */,
+				AD6BD3632B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift in Sources */,
 				AD99A12E217BDB9900A288B4 /* Utilities.swift in Sources */,
 				AD91B72824F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift in Sources */,
 				AD99A12C217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift in Sources */,
@@ -356,7 +364,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = C63R5PEP3C;
 				INFOPLIST_FILE = "Image Gallery v2/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -376,7 +384,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = C63R5PEP3C;
 				INFOPLIST_FILE = "Image Gallery v2/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

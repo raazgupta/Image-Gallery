@@ -15,6 +15,7 @@ struct ImageGalleryModel: Codable {
     var galleryPW: String
     var galleryEN: Bool
     var galleryContents = [galleryContent]()
+    var starProbabilityValues: starProbabilities?
     
     struct galleryContent: Codable {
         let url: String
@@ -24,11 +25,18 @@ struct ImageGalleryModel: Codable {
         var favorite: Bool?
     }
     
+    struct starProbabilities: Codable {
+        var star1: Float
+        var star2: Float
+        var star3: Float
+    }
+    
     init(title: String) {
         galleryTitle = title
         galleryPW = ""
         galleryEN = false
         galleryContents = []
+        starProbabilityValues = starProbabilities(star1: 60.0, star2: 30.0, star3: 10.0)
     }
     
     // JSON encoder and decoder
@@ -63,6 +71,22 @@ struct ImageGalleryModel: Codable {
         }
         else {
             return showOrder
+        }
+    }
+    
+    // Function to delete a galleryContent based on URL
+    mutating func deleteGalleryContent(byURL url: String) {
+        galleryContents.removeAll { $0.url == url }
+    }
+    
+    mutating func updateGalleryContent(byURL url: String, newTitle: String?, newStars: Int?, newFavorite: Bool?) {
+        // Iterate over all galleryContents and update items that match the URL
+        for i in 0..<galleryContents.count {
+            if galleryContents[i].url == url {
+                galleryContents[i].imageTitle = newTitle
+                galleryContents[i].stars = newStars
+                galleryContents[i].favorite = newFavorite
+            }
         }
     }
     

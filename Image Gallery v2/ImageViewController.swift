@@ -108,7 +108,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                 imageDetailsVC.imageTitle = imageTitle
                 imageDetailsVC.stars = stars
                 imageDetailsVC.favorite = favorite
-                
+                imageDetailsVC.imageURL = imageURL?.absoluteString
             }
         }
     }
