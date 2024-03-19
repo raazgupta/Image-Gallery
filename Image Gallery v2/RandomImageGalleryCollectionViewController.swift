@@ -10,11 +10,6 @@ import UIKit
 
 private let reuseIdentifier = "ImageCell"
 
-protocol RandomImageGalleryCollectionViewControllerDelegate: NSObjectProtocol {
-    func deleteImage(showIndex: Int)
-    func passBackImageGallery(childImageGallery: ImageGalleryModel?)
-}
-
 class RandomImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var tappedImageIndex: Int?
@@ -25,7 +20,7 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     var flowLayout: UICollectionViewFlowLayout? {
         return collectionView?.collectionViewLayout as? UICollectionViewFlowLayout
     }
-    weak var delegate: RandomImageGalleryCollectionViewControllerDelegate?
+    
     
     @IBAction func scaleCells(_ sender: UIPinchGestureRecognizer) {
         if sender.state == .ended {
@@ -49,7 +44,18 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
         // Do any additional setup after loading the view.
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdatedImageDetails), name: .updatedImageDetails, object: nil)
     }
+    
+    @objc func handleUpdatedImageDetails(notification: Notification) {
+        if let imageURL = notification.userInfo?["imageURL"] {
+            let imageTitle = notification.userInfo?["imageTitle"]
+            let stars = notification.userInfo?["stars"]
+            let favorite = notification.userInfo?["favorite"]
+            imageGallery?.updateGalleryContent(byURL: imageURL as! String, newTitle: imageTitle as? String, newStars: stars as? Int, newFavorite: favorite as? Bool)
+        }
+    }
+    
     
     @objc func refreshImageCells() {
         collectionView.reloadData()
@@ -104,6 +110,10 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
             let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
                 if let imageGallery = self.imageGallery, let showOrder = self.showOrder {
                     if imageGallery.galleryContents.count > 0 {
+                        
+                        let deletedURL = self.imageGallery?.galleryContents[indexPath.row].url
+                        NotificationCenter.default.post(name: .deletedImage, object: nil, userInfo: ["deletedURL": deletedURL! ])
+                        
                         let showIndex = showOrder[indexPath.row]
                         self.imageGallery!.galleryContents.remove(at: showIndex)
                         //let showItemToDelete = self.showOrder![showIndex]
@@ -114,7 +124,7 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
                             }
                         }
                         collectionView.deleteItems(at: [indexPath])
-                        self.delegate?.deleteImage(showIndex: showIndex)
+                        
                         self.refreshImageCells()
                     }
                 }
@@ -150,7 +160,7 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showImage2" {
             if let imageVC = segue.destination.contents as? ImageViewController {
-                imageVC.delegate = self
+                
                 if let collectionViewIndices = collectionView?.indexPathsForSelectedItems, let collectionViewIndex = collectionViewIndices.first
                 {
                     if let showOrder = showOrder, let imageGallery = imageGallery {
@@ -173,14 +183,6 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     @IBAction func shuffle(_ sender: UIBarButtonItem) {
         showOrder = imageGallery?.determineShowOrder(random: true)
         refreshImageCells()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        if self.isMovingFromParent{
-            delegate?.passBackImageGallery(childImageGallery: imageGallery)
-        }
     }
     
 
@@ -215,17 +217,4 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
     }
     */
 
-}
-
-extension RandomImageGalleryCollectionViewController: ImageViewControllerDelegate {
-    func passBackImageDetails(imageTitle: String?, stars: Int?, favorite: Bool?) {
-        if let tappedImageIndex = self.tappedImageIndex {
-            if let showOrder = self.showOrder {
-                let galleryIndex = showOrder[tappedImageIndex]
-                imageGallery?.galleryContents[galleryIndex].imageTitle = imageTitle
-                imageGallery?.galleryContents[galleryIndex].stars = stars
-                imageGallery?.galleryContents[galleryIndex].favorite = favorite
-            }
-        }
-    }
 }

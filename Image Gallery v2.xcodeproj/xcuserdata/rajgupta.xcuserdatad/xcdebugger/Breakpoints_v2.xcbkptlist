@@ -7,22 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "ACBFBF8F-34AE-4F44-BCBD-B77C8CED2DA6"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Image Gallery v2/ImageViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
-            landmarkName = "viewWillDisappear(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "2E65C26D-54D5-4161-868D-C1FA5A01B13A"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -30,8 +14,8 @@
             filePath = "Image Gallery v2/RandomImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
+            startingLineNumber = "173"
+            endingLineNumber = "173"
             landmarkName = "prepare(for:sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -50,36 +34,6 @@
             endingLineNumber = "41"
             landmarkName = "tappedApplyButton()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E2519037-37FC-4F79-9811-BE3E0BFFA9C9 - e1223705ba3cf2a7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Image_Keeper.ImageSearchViewController.tappedApplyButton() -&gt; ()"
-                  moduleName = "Image Keeper"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rajgupta/Documents/Coding/iOS/Image%20Gallery%20v2/Image%20Gallery%20v2/ImageSearchViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "41"
-                  endingLineNumber = "41">
-               </Location>
-               <Location
-                  uuid = "E2519037-37FC-4F79-9811-BE3E0BFFA9C9 - a28295eef1b66d78"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Image_Keeper.ImageGalleryModel.galleryContent) -&gt; Swift.Bool in Image_Keeper.ImageSearchViewController.tappedApplyButton() -&gt; ()"
-                  moduleName = "Image Keeper"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rajgupta/Documents/Coding/iOS/Image%20Gallery%20v2/Image%20Gallery%20v2/ImageSearchViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -108,8 +62,8 @@
             filePath = "Image Gallery v2/FilteredImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "collectionView(_:numberOfItemsInSection:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -124,8 +78,8 @@
             filePath = "Image Gallery v2/FilteredImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "89"
-            endingLineNumber = "89"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
             landmarkName = "collectionView(_:cellForItemAt:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -236,8 +190,8 @@
             filePath = "Image Gallery v2/ImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "593"
-            endingLineNumber = "593"
+            startingLineNumber = "633"
+            endingLineNumber = "633"
             landmarkName = "doSomethingWith(pwSwitch:pw:isEN:star1Probability:star2Probability:star3Probability:)"
             landmarkType = "7">
          </BreakpointContent>

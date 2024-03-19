@@ -49,6 +49,16 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
         // Do any additional setup after loading the view.
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdatedImageDetails), name: .updatedImageDetails, object: nil)
+    }
+    
+    @objc func handleUpdatedImageDetails(notification: Notification) {
+        if let imageURL = notification.userInfo?["imageURL"] {
+            let imageTitle = notification.userInfo?["imageTitle"]
+            let stars = notification.userInfo?["stars"]
+            let favorite = notification.userInfo?["favorite"]
+            imageGallery?.updateGalleryContent(byURL: imageURL as! String, newTitle: imageTitle as? String, newStars: stars as? Int, newFavorite: favorite as? Bool)
+        }
     }
     
     @objc func refreshImageCells() {

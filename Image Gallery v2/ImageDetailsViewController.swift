@@ -55,7 +55,7 @@ class ImageDetailsViewController: UIViewController, UIScrollViewDelegate, UIText
         stars = starsSegmentedControl.selectedSegmentIndex + 1
         favorite = favoriteSwitch.isOn
         delegate?.didUpdateImageDetails(imageTitle: imageTitle, stars: stars, favorite: favorite)
-        NotificationCenter.default.post(name: .updatedImageDetals, object: nil, userInfo: ["imageURL": imageURL!, "imageTitle": imageTitle ?? "", "stars": stars ?? 1, "favorite": favorite ?? false])
+        NotificationCenter.default.post(name: .updatedImageDetails, object: nil, userInfo: ["imageURL": imageURL ?? "", "imageTitle": imageTitle ?? "", "stars": stars ?? 1, "favorite": favorite ?? false])
         self.navigationController?.popViewController(animated: true)
     }
     

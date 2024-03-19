@@ -322,7 +322,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleDeletedImage), name: .deletedImage, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdatedImageDetails), name: .updatedImageDetals, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdatedImageDetails), name: .updatedImageDetails, object: nil)
         
         //imageCellWidth = (collectionView?.bounds.width)! / 2
         
@@ -394,11 +394,6 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         }
     
         return cell
-    }
-    
-    // Delegate method for Random Image Gallery used to delete image in master view
-    func deleteImage(showIndex: Int) {
-        imageGallery.galleryContents.remove(at: showIndex)
     }
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
@@ -541,7 +536,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showImage" {
             if let imageVC = segue.destination.contents as? ImageViewController {
-                imageVC.delegate = self
+                
                 if let collectionViewIndices = collectionView?.indexPathsForSelectedItems, let collectionViewIndex = collectionViewIndices.first
                 {
                     //let galleryIndex = showOrder[collectionViewIndex.item]
@@ -573,14 +568,59 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             let randomVC = segue.destination as! RandomImageGalleryCollectionViewController
             randomVC.imageGallery = imageGallery
             randomVC.showOrder = imageGallery.determineShowOrder(random: true)
-            randomVC.delegate = self
         }
         if segue.identifier == "showSearch" {
             if let searchVC = segue.destination.contents as? ImageSearchViewController {
                 searchVC.imageGallery = imageGallery
             }
         }
+        if segue.identifier == "showGachaImage" {
+            if let imageVC = segue.destination.contents as? ImageViewController {
+                
+                let imageGalleryContent = gachaGallery()
+                
+                if let imageGalleryContent = imageGalleryContent {
+                    if let url = URL(string: imageGalleryContent.url) {
+                        imageVC.imageURL = url
+                    }
+                    imageVC.imageTitle = imageGalleryContent.imageTitle
+                    imageVC.stars = imageGalleryContent.stars
+                    imageVC.favorite = imageGalleryContent.favorite
+                }
+                
+            }
+        }
     }
+    
+    private func gachaGallery() -> ImageGalleryModel.galleryContent? {
+        // Ensure there are images in the gallery
+        guard !imageGallery.galleryContents.isEmpty else { return nil }
+
+        // Extract star probabilities
+        let star1Probability = Double (imageGallery.starProbabilityValues?.star1 ?? 60.0)
+        let star2Probability = Double (imageGallery.starProbabilityValues?.star2 ?? 30.0)
+
+        // Randomly pick a star level based on probabilities
+        let randomNumber = Double.random(in: 0..<100)
+        let starLevel: Int
+        if randomNumber < star1Probability {
+            starLevel = 1
+        } else if randomNumber < star1Probability + star2Probability {
+            starLevel = 2
+        } else {
+            starLevel = 3
+        }
+
+        // Filter images by the chosen star level
+        let filteredImages = imageGallery.galleryContents.filter { $0.stars == starLevel }
+
+        // If no images at this star level, or if there's a logic error, default to all images
+        let imagesToChooseFrom = filteredImages.isEmpty ? imageGallery.galleryContents : filteredImages
+
+        // Pick a random image from the set
+        return imagesToChooseFrom.randomElement()
+    }
+
     
     func doSomethingWith(pwSwitch: Bool, pw: String, isEN: Bool, star1Probability: Float, star2Probability: Float, star3Probability: Float) {
         if pwSwitch {
@@ -717,27 +757,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
 }
 
-extension ImageGalleryCollectionViewController: ImageViewControllerDelegate {
-    func passBackImageDetails(imageTitle: String?, stars: Int?, favorite: Bool?) {
-        if let tappedImageIndex = self.tappedImageIndex {
-            imageGallery.galleryContents[tappedImageIndex].imageTitle = imageTitle
-            imageGallery.galleryContents[tappedImageIndex].stars = stars
-            imageGallery.galleryContents[tappedImageIndex].favorite = favorite
-        }
-    }
-}
-
-extension ImageGalleryCollectionViewController: RandomImageGalleryCollectionViewControllerDelegate{
-    func passBackImageGallery(childImageGallery: ImageGalleryModel?) {
-        if let childImageGallery = childImageGallery {
-            self.imageGallery = childImageGallery
-        }
-    }
-}
-
 extension Notification.Name {
     static let deletedImage = Notification.Name("deletedImage")
-    static let updatedImageDetals = Notification.Name("updatedImageDetails")
+    static let updatedImageDetails = Notification.Name("updatedImageDetails")
 }
 
 
