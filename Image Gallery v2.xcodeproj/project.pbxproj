@@ -136,6 +136,8 @@
 			dependencies = (
 			);
 			name = "Image Gallery v2";
+			packageProductDependencies = (
+			);
 			productName = "Image Gallery v2";
 			productReference = AD99A10B217BD6ED00A288B4 /* Image Keeper.app */;
 			productType = "com.apple.product-type.application";
@@ -166,6 +168,8 @@
 				Base,
 			);
 			mainGroup = AD99A102217BD6ED00A288B4;
+			packageReferences = (
+			);
 			productRefGroup = AD99A10C217BD6ED00A288B4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -272,6 +276,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -336,6 +341,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

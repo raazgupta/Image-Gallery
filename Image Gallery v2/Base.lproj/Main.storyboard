@@ -370,7 +370,7 @@
                             <barButtonItem image="dice.fill" catalog="system" id="d0y-fi-OWr">
                                 <color key="tintColor" red="0.26274509800000001" green="0.73333333329999995" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
-                                    <segue destination="fKJ-HO-gKh" kind="show" identifier="showGachaImage" id="y4c-RW-XdU"/>
+                                    <segue destination="fKJ-HO-gKh" kind="show" identifier="showGachaImage" id="OKe-2g-R9Q"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem image="magnifyingglass" catalog="system" id="eME-No-h6a">
@@ -721,7 +721,6 @@
         <!--Navigation Controller-->
         <scene sceneID="HXS-fz-crq">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="y0q-tB-9rz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController storyboardIdentifier="ImageDocumentMVC" id="NVq-Qa-88z" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="DdS-DN-tao">
                         <rect key="frame" x="0.0" y="20" width="414" height="44"/>
@@ -732,13 +731,13 @@
                         <segue destination="AUY-JA-cYM" kind="relationship" relationship="rootViewController" id="YED-ge-vhq"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="y0q-tB-9rz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="699" y="1317"/>
         </scene>
         <!--Image View Controller2-->
         <scene sceneID="Ulu-9m-AVg">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="vLX-NB-DpU" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="AUY-JA-cYM" customClass="ImageViewController2" customModule="Image_Keeper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="s4y-0U-M1e">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
@@ -778,6 +777,7 @@
                         <outlet property="spinner" destination="d1M-Pk-fy6" id="d7x-SW-AhT"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vLX-NB-DpU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1422" y="1317"/>
         </scene>
@@ -1138,7 +1138,6 @@
         <!--Image View Controller-->
         <scene sceneID="2G7-GV-Ywq">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="mOu-gh-50j" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="fKJ-HO-gKh" customClass="ImageViewController" customModule="Image_Keeper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="AhM-Yd-FfP">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
@@ -1177,6 +1176,7 @@
                         <outlet property="spinner" destination="w37-rR-7fu" id="BNV-x6-UHD"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mOu-gh-50j" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="178" y="-22"/>
         </scene>
