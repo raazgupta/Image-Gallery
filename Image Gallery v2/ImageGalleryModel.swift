@@ -13,6 +13,7 @@ struct ImageGalleryModel: Codable {
     
     var galleryTitle: String
     var galleryPW: String
+    var galleryPWEN: Bool?
     var galleryEN: Bool
     var galleryContents = [galleryContent]()
     var starProbabilityValues: starProbabilities?
@@ -34,6 +35,7 @@ struct ImageGalleryModel: Codable {
     init(title: String) {
         galleryTitle = title
         galleryPW = ""
+        galleryPWEN = false
         galleryEN = false
         galleryContents = []
         starProbabilityValues = starProbabilities(star1: 60.0, star2: 30.0, star3: 10.0)

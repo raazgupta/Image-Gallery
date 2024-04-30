@@ -49,6 +49,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                             self.galleryPW = self.imageGallery.galleryPW
                             self.galleryEN = self.imageGallery.galleryEN
                             self.galleryEN = self.decrypt()
+                            self.galleryPW = self.imageGallery.galleryPW
                         }
                         
                         if self.imageGallery.galleryPW != "" {
@@ -152,61 +153,88 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     private func encrypt() -> ImageGalleryModel?{
         
         //if !isImageGalleryEncrypted {
-            var newImageGallery = ImageGalleryModel(title: "Gallery")
-            newImageGallery.galleryPW = galleryPW!
-            newImageGallery.galleryEN = galleryEN!
-            newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
-            newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
-            newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
-            
-            for galleryContent in imageGallery.galleryContents {
-                let pwLength = UInt32(galleryPW!.count)
-                var enUrlString = ""
-                // encrypt the url
-                for character in galleryContent.url {
-                    guard let uniCode = UnicodeScalar(String(character)) else {
-                        return nil
-                    }
-                    guard let newUniCode = UnicodeScalar(uniCode.value+pwLength) else {
-                        return nil
-                    }
-                    enUrlString.append(String(newUniCode))
-                    /*
-                    switch uniCode {
-                    case "A"..<"Z","a"..<"z":
-                        enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
-                    default:
-                        enUrlString.append(character)
-                    }
-                     */
-                }
-                
-                // encrypt the title
-                var enTitleString = ""
-                if let imageTitle = galleryContent.imageTitle {
-                    for character in imageTitle {
+        var newImageGallery = ImageGalleryModel(title: "Gallery")
+        //newImageGallery.galleryPW = galleryPW!
+        newImageGallery.galleryEN = galleryEN!
+        newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
+        newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
+        newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
+    
+        let pwLength = UInt32(galleryPW!.count)
+        
+            // encypt the password
+        if let galleryPWEN = imageGallery.galleryPWEN {
+            if galleryPWEN == true {
+                var enGalleryPW = ""
+                if let galleryPW = galleryPW {
+                    for character in galleryPW {
                         guard let uniCode = UnicodeScalar(String(character)) else {
                             return nil
                         }
                         guard let newUniCode = UnicodeScalar(uniCode.value+pwLength) else {
                             return nil
                         }
-                        enTitleString.append(String(newUniCode))
-                        /*
-                         switch uniCode {
-                         case "A"..<"Z","a"..<"z":
-                         enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
-                         default:
-                         enUrlString.append(character)
-                         }
-                         */
+                        enGalleryPW.append(String(newUniCode))
                     }
                 }
-                
-                
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: enTitleString, stars: galleryContent.stars, favorite: galleryContent.favorite )
-                newImageGallery.galleryContents.append(newGalleryContent)
+                newImageGallery.galleryPW = enGalleryPW
             }
+            else {
+                newImageGallery.galleryPW = galleryPW!
+            }
+        }
+        else {
+            newImageGallery.galleryPW = galleryPW!
+        }
+            
+        for galleryContent in imageGallery.galleryContents {
+            
+            var enUrlString = ""
+            // encrypt the url
+            for character in galleryContent.url {
+                guard let uniCode = UnicodeScalar(String(character)) else {
+                    return nil
+                }
+                guard let newUniCode = UnicodeScalar(uniCode.value+pwLength) else {
+                    return nil
+                }
+                enUrlString.append(String(newUniCode))
+                /*
+                switch uniCode {
+                case "A"..<"Z","a"..<"z":
+                    enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                default:
+                    enUrlString.append(character)
+                }
+                 */
+            }
+            
+            // encrypt the title
+            var enTitleString = ""
+            if let imageTitle = galleryContent.imageTitle {
+                for character in imageTitle {
+                    guard let uniCode = UnicodeScalar(String(character)) else {
+                        return nil
+                    }
+                    guard let newUniCode = UnicodeScalar(uniCode.value+pwLength) else {
+                        return nil
+                    }
+                    enTitleString.append(String(newUniCode))
+                    /*
+                     switch uniCode {
+                     case "A"..<"Z","a"..<"z":
+                     enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                     default:
+                     enUrlString.append(character)
+                     }
+                     */
+                }
+            }
+                
+                
+            let newGalleryContent = ImageGalleryModel.galleryContent(url: enUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: enTitleString, stars: galleryContent.stars, favorite: galleryContent.favorite )
+            newImageGallery.galleryContents.append(newGalleryContent)
+        }
             //imageGallery = newImageGallery
             //isImageGalleryEncrypted = true
         //}
@@ -215,62 +243,89 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     private func decrypt() -> Bool {
         //if !isImageGalleryDecrypted {
-            var newImageGallery = ImageGalleryModel(title: "Gallery")
-            newImageGallery.galleryPW = galleryPW!
-            newImageGallery.galleryEN = galleryEN!
-            newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
-            newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
-            newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
-            
-            for galleryContent in imageGallery.galleryContents {
-                let pwLength = UInt32(galleryPW!.count)
-                
-                // decrypt the url
-                var deUrlString = ""
-                for character in galleryContent.url {
-                    guard let uniCode = UnicodeScalar(String(character)) else {
-                        return false
-                    }
-                    guard let newUniCode = UnicodeScalar(uniCode.value-pwLength) else {
-                        return false
-                    }
-                    deUrlString.append(String(newUniCode))
-                    /*
-                    switch uniCode {
-                    case "A"..<"Z","a"..<"z":
-                        enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
-                    default:
-                        enUrlString.append(character)
-                    }
-                     */
-                }
-                
-                //decrypt the title
-                var deTitleString = ""
-                if let imageTitle = galleryContent.imageTitle {
-                    for character in imageTitle {
+        var newImageGallery = ImageGalleryModel(title: "Gallery")
+        //newImageGallery.galleryPW = galleryPW!
+        newImageGallery.galleryEN = galleryEN!
+        newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
+        newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
+        newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
+    
+        let pwLength = UInt32(galleryPW!.count)
+    
+        // decrypt the password
+        if let galleryPWEN = imageGallery.galleryPWEN {
+            if galleryPWEN == true {
+                var deGalleryPW = ""
+                if let galleryPW = galleryPW {
+                    for character in galleryPW {
                         guard let uniCode = UnicodeScalar(String(character)) else {
                             return false
                         }
                         guard let newUniCode = UnicodeScalar(uniCode.value-pwLength) else {
                             return false
                         }
-                        deTitleString.append(String(newUniCode))
-                        /*
-                         switch uniCode {
-                         case "A"..<"Z","a"..<"z":
-                         enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
-                         default:
-                         enUrlString.append(character)
-                         }
-                         */
+                        deGalleryPW.append(String(newUniCode))
                     }
                 }
-                
-                let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: deTitleString, stars: galleryContent.stars, favorite: galleryContent.favorite)
-                newImageGallery.galleryContents.append(newGalleryContent)
+                newImageGallery.galleryPW = deGalleryPW
             }
-            imageGallery = newImageGallery
+            else {
+                newImageGallery.galleryPW = galleryPW!
+            }
+        }
+        else {
+            newImageGallery.galleryPW = galleryPW!
+        }
+            
+        for galleryContent in imageGallery.galleryContents {
+            
+            
+            // decrypt the url
+            var deUrlString = ""
+            for character in galleryContent.url {
+                guard let uniCode = UnicodeScalar(String(character)) else {
+                    return false
+                }
+                guard let newUniCode = UnicodeScalar(uniCode.value-pwLength) else {
+                    return false
+                }
+                deUrlString.append(String(newUniCode))
+                /*
+                switch uniCode {
+                case "A"..<"Z","a"..<"z":
+                    enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                default:
+                    enUrlString.append(character)
+                }
+                 */
+            }
+            
+            //decrypt the title
+            var deTitleString = ""
+            if let imageTitle = galleryContent.imageTitle {
+                for character in imageTitle {
+                    guard let uniCode = UnicodeScalar(String(character)) else {
+                        return false
+                    }
+                    guard let newUniCode = UnicodeScalar(uniCode.value-pwLength) else {
+                        return false
+                    }
+                    deTitleString.append(String(newUniCode))
+                    /*
+                     switch uniCode {
+                     case "A"..<"Z","a"..<"z":
+                     enUrlString.append(String(UnicodeScalar(uniCode.value+pwLength)!))
+                     default:
+                     enUrlString.append(character)
+                     }
+                     */
+                }
+            }
+            
+            let newGalleryContent = ImageGalleryModel.galleryContent(url: deUrlString, aspectRatio: galleryContent.aspectRatio, imageTitle: deTitleString, stars: galleryContent.stars, favorite: galleryContent.favorite)
+            newImageGallery.galleryContents.append(newGalleryContent)
+        }
+        self.imageGallery = newImageGallery
             //isImageGalleryDecrypted = true
         //}
         return true

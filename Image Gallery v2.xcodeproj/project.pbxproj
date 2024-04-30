@@ -86,7 +86,6 @@
 		AD99A10D217BD6ED00A288B4 /* Image Gallery v2 */ = {
 			isa = PBXGroup;
 			children = (
-				AD6DE2CC2BAA3F43008DA2AF /* ImageViewController2.swift */,
 				AD99A11E217BD6F000A288B4 /* Info.plist */,
 				AD377D1024F465A700D0B860 /* BlankScreenViewController.swift */,
 				AD99A110217BD6ED00A288B4 /* DocumentBrowserViewController.swift */,
@@ -100,6 +99,7 @@
 				AD99A114217BD6ED00A288B4 /* ImageGalleryDocument.swift */,
 				AD99A127217BDB7D00A288B4 /* ImageGalleryModel.swift */,
 				AD99A125217BDB3A00A288B4 /* ImageViewController.swift */,
+				AD6DE2CC2BAA3F43008DA2AF /* ImageViewController2.swift */,
 				AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */,
 				AD6BD3622B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift */,
 				AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */,
