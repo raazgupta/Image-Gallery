@@ -16,8 +16,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     // Converting from JSON document to ImageGalleryModel
     var document: ImageGalleryDocument?
-    var galleryPW: String?
-    var galleryEN: Bool?
+    // var galleryPW: String?
+    // var galleryEN: Bool?
+    // var galleryPWEN: Bool?
     var showImages: Bool = false
     var showEnterPassword: Bool = true
     //var isImageGalleryDecrypted = false
@@ -46,10 +47,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         }
                         
                         if self.imageGallery.galleryPW != "" && self.imageGallery.galleryEN == true {
-                            self.galleryPW = self.imageGallery.galleryPW
-                            self.galleryEN = self.imageGallery.galleryEN
-                            self.galleryEN = self.decrypt()
-                            self.galleryPW = self.imageGallery.galleryPW
+                            // self.galleryPW = self.imageGallery.galleryPW
+                            // self.galleryEN = self.imageGallery.galleryEN
+                            // self.galleryPWEN = self.imageGallery.galleryPWEN
+                            self.imageGallery.galleryEN = self.decrypt()
+                            // self.galleryPW = self.imageGallery.galleryPW
                         }
                         
                         if self.imageGallery.galleryPW != "" {
@@ -120,22 +122,24 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     @IBAction func save() {
         
         var enImageGallery: ImageGalleryModel?
+        /*
         if let galleryPW = galleryPW {
             imageGallery.galleryPW = galleryPW
         }
-        if let galleryEN = galleryEN, let _ = galleryPW {
-            imageGallery.galleryEN = galleryEN
-            if galleryEN == true {
+         */
+        // if let galleryEN = galleryEN, let _ = galleryPW {
+        //    imageGallery.galleryEN = galleryEN
+        if imageGallery.galleryEN == true {
                 enImageGallery = encrypt()
                 document?.imageGallery = enImageGallery
-            }
-            else {
-                document?.imageGallery = imageGallery
-            }
         }
         else {
             document?.imageGallery = imageGallery
         }
+        //}
+        //else {
+        //    document?.imageGallery = imageGallery
+        //}
         
         if document?.imageGallery != nil {
             document?.updateChangeCount(.done)
@@ -155,18 +159,20 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         //if !isImageGalleryEncrypted {
         var newImageGallery = ImageGalleryModel(title: "Gallery")
         //newImageGallery.galleryPW = galleryPW!
-        newImageGallery.galleryEN = galleryEN!
+        newImageGallery.galleryEN = imageGallery.galleryEN!
+        newImageGallery.galleryPWEN = imageGallery.galleryPWEN ?? false
         newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
         newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
         newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
     
-        let pwLength = UInt32(galleryPW!.count)
+        let pwLength = UInt32(imageGallery.galleryPW!.count)
         
-            // encypt the password
+        // encypt the password
         if let galleryPWEN = imageGallery.galleryPWEN {
+            newImageGallery.galleryPWEN = galleryPWEN
             if galleryPWEN == true {
                 var enGalleryPW = ""
-                if let galleryPW = galleryPW {
+                if let galleryPW = imageGallery.galleryPW {
                     for character in galleryPW {
                         guard let uniCode = UnicodeScalar(String(character)) else {
                             return nil
@@ -180,11 +186,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 newImageGallery.galleryPW = enGalleryPW
             }
             else {
-                newImageGallery.galleryPW = galleryPW!
+                newImageGallery.galleryPW = imageGallery.galleryPW!
             }
         }
         else {
-            newImageGallery.galleryPW = galleryPW!
+            newImageGallery.galleryPW = imageGallery.galleryPW!
         }
             
         for galleryContent in imageGallery.galleryContents {
@@ -245,18 +251,19 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         //if !isImageGalleryDecrypted {
         var newImageGallery = ImageGalleryModel(title: "Gallery")
         //newImageGallery.galleryPW = galleryPW!
-        newImageGallery.galleryEN = galleryEN!
+        newImageGallery.galleryEN = imageGallery.galleryEN!
+        newImageGallery.galleryPWEN = imageGallery.galleryPWEN ?? false
         newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
         newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
         newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
     
-        let pwLength = UInt32(galleryPW!.count)
+        let pwLength = UInt32(imageGallery.galleryPW!.count)
     
         // decrypt the password
         if let galleryPWEN = imageGallery.galleryPWEN {
             if galleryPWEN == true {
                 var deGalleryPW = ""
-                if let galleryPW = galleryPW {
+                if let galleryPW = imageGallery.galleryPW {
                     for character in galleryPW {
                         guard let uniCode = UnicodeScalar(String(character)) else {
                             return false
@@ -270,11 +277,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 newImageGallery.galleryPW = deGalleryPW
             }
             else {
-                newImageGallery.galleryPW = galleryPW!
+                newImageGallery.galleryPW = imageGallery.galleryPW!
             }
         }
         else {
-            newImageGallery.galleryPW = galleryPW!
+            newImageGallery.galleryPW = imageGallery.galleryPW!
         }
             
         for galleryContent in imageGallery.galleryContents {
@@ -614,8 +621,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             securityVC.star1Probability = imageGallery.starProbabilityValues?.star1 ?? 60.0
             securityVC.star2Probability = imageGallery.starProbabilityValues?.star2 ?? 30.0
             securityVC.star3Probability = imageGallery.starProbabilityValues?.star3 ?? 10.0
-            securityVC.galleryPW = imageGallery.galleryPW
-            securityVC.galleryEN = imageGallery.galleryEN
+            securityVC.galleryPW = imageGallery.galleryPW ?? ""
+            securityVC.galleryEN = imageGallery.galleryEN ?? false
+            securityVC.galleryPWEN = imageGallery.galleryPWEN ?? false
             //save()
             //self.document?.close()
         }
@@ -677,14 +685,15 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
 
     
-    func doSomethingWith(pwSwitch: Bool, pw: String, isEN: Bool, star1Probability: Float, star2Probability: Float, star3Probability: Float) {
+    func doSomethingWith(pwSwitch: Bool, pw: String, isEN: Bool, isPWEN: Bool, star1Probability: Float, star2Probability: Float, star3Probability: Float) {
         if pwSwitch {
-            galleryPW = pw
+            imageGallery.galleryPW = pw
         }
         else {
-            galleryPW = ""
+            imageGallery.galleryPW = ""
         }
-        galleryEN = isEN
+        imageGallery.galleryEN = isEN
+        imageGallery.galleryPWEN = isPWEN
         imageGallery.starProbabilityValues?.star1 = star1Probability
         imageGallery.starProbabilityValues?.star2 = star2Probability
         imageGallery.starProbabilityValues?.star3 = star3Probability

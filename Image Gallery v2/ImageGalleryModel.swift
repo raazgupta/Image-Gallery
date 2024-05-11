@@ -12,9 +12,9 @@ import UIKit
 struct ImageGalleryModel: Codable {
     
     var galleryTitle: String
-    var galleryPW: String
+    var galleryPW: String?
     var galleryPWEN: Bool?
-    var galleryEN: Bool
+    var galleryEN: Bool?
     var galleryContents = [galleryContent]()
     var starProbabilityValues: starProbabilities?
     

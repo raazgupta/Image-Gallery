@@ -9,7 +9,7 @@
 import UIKit
 
 protocol SecurityOptionsViewControllerDelegate: NSObjectProtocol {
-    func doSomethingWith(pwSwitch: Bool, pw: String, isEN: Bool, star1Probability: Float, star2Probability: Float, star3Probability: Float)
+    func doSomethingWith(pwSwitch: Bool, pw: String, isEN: Bool, isPWEN: Bool, star1Probability: Float, star2Probability: Float, star3Probability: Float)
 }
 
 class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
@@ -26,6 +26,7 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
     var star3Probability: Float = 10.0
     var galleryPW: String = ""
     var galleryEN: Bool = false
+    var galleryPWEN: Bool = false
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -49,6 +50,7 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
         self.view.addGestureRecognizer(tapGesture)
         
         encryptFile.isOn = galleryEN
+        encryptPassword.isOn = galleryPWEN
         
         if galleryPW != "" {
             setPassword.isOn = true
@@ -64,6 +66,7 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var encryptFile: UISwitch!
+    @IBOutlet weak var encryptPassword: UISwitch!
     @IBOutlet weak var applyButton: UIButton!
     @IBOutlet weak var setPassword: UISwitch!
     
@@ -101,11 +104,21 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
             alert.addAction(UIAlertAction(title: "Ok", style: .default))
             present(alert, animated: true)
         }
+        else if passwordText.isHidden && encryptPassword.isOn {
+            let alert = UIAlertController(title: "Encrypt without Password", message: "To encrypt password, you must also set password", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default))
+            present(alert, animated: true)
+        }
+        else if !encryptFile.isOn && encryptPassword.isOn {
+            let alert = UIAlertController(title: "Encrypt File", message: "To encrypt password, you must also enable Encrypt file", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default))
+            present(alert, animated: true)
+        }
         else {
             if let delegate = delegate {
                 if let star1Float = Float(star1Text.text ?? ""), let star2Float = Float(star2Text.text ?? ""), let star3Float = Float(star3Text.text ?? "") {
                     if (star1Float + star2Float + star3Float) == 100 {
-                        delegate.doSomethingWith(pwSwitch: setPassword.isOn , pw: passwordText.text!, isEN: encryptFile.isOn, star1Probability: star1Float, star2Probability: star2Float, star3Probability: star3Float)
+                        delegate.doSomethingWith(pwSwitch: setPassword.isOn , pw: passwordText.text!, isEN: encryptFile.isOn, isPWEN: encryptPassword.isOn, star1Probability: star1Float, star2Probability: star2Float, star3Probability: star3Float)
                         _ = navigationController?.popViewController(animated: true)
                     }
                     else {
