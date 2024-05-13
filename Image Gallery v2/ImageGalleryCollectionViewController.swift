@@ -483,7 +483,15 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 }
             })
             
-            return UIMenu(title: "", image: nil, identifier: nil, children: [delete, copyURL])
+            // Prss image to favorite
+            let favoriteImage = UIAction(title: "Favorite", image: UIImage(systemName: "heart.fill"), identifier: nil, handler: { action in
+                if self.imageGallery.galleryContents.count > 0 {
+                    let imageURL = self.imageGallery.galleryContents[indexPath.row].url
+                    self.imageGallery.updateGalleryContent(byURL: imageURL, newTitle: nil, newStars: nil, newFavorite: true)
+                }
+            })
+            
+            return UIMenu(title: "", image: nil, identifier: nil, children: [delete, favoriteImage, copyURL])
         }
         return configuration
     }

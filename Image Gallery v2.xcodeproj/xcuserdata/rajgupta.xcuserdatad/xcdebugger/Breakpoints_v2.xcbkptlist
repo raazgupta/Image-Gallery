@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "E2519037-37FC-4F79-9811-BE3E0BFFA9C9"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Image Gallery v2/ImageSearchViewController.swift"
@@ -182,7 +182,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "C27A4214-C3DA-4613-BD43-7E567A3304E1"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Image Gallery v2/ImageSearchViewController.swift"
@@ -220,8 +220,8 @@
             filePath = "Image Gallery v2/ImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "697"
-            endingLineNumber = "697"
+            startingLineNumber = "705"
+            endingLineNumber = "705"
             landmarkName = "doSomethingWith(pwSwitch:pw:isEN:isPWEN:star1Probability:star2Probability:star3Probability:)"
             landmarkType = "7">
          </BreakpointContent>
