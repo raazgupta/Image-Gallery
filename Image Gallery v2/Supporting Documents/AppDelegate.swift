@@ -9,9 +9,25 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContollerDelegate {
+    
+    func passwordResult(showImages: Bool, showEnterPassword: Bool) {
+        if showImages {
+            if let lastVC = lastActiveViewController {
+                window?.rootViewController?.present(lastVC, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    
 
     var window: UIWindow?
+    var documentPassword: String?
+    var lastActiveViewController: UIViewController?
+    
+    var isPasswordProtected: Bool {
+        return documentPassword != nil
+    }
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -26,6 +42,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        lastActiveViewController = window?.rootViewController?.presentedViewController
+        if isPasswordProtected {
+            window?.rootViewController?.presentedViewController?.dismiss(animated: false)
+        }
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -36,13 +56,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        if isPasswordProtected {
+            showPasswordScreen()
+        }
         hideBlankScreen()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        
     }
+    
+    private func showPasswordScreen() {
+        print("Attempting to show password screen")
+        guard let window = window else {
+            print("Window is not available")
+            return
+        }
 
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let passwordVC = storyboard.instantiateViewController(withIdentifier: "enterPassword") as? EnterPasswordViewController {
+            print("EnterPasswordViewController instantiated")
+            passwordVC.correctPassword = documentPassword
+            passwordVC.delegate = self
+            passwordVC.modalPresentationStyle = .fullScreen
+            
+            if let rootViewController = window.rootViewController {
+                print("Presenting EnterPasswordViewController after delay")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if let presentedVC = rootViewController.presentedViewController {
+                        print("Already presented view controller found, dismissing it first")
+                        presentedVC.dismiss(animated: false) {
+                            print("Presenting EnterPasswordViewController after dismissing the current one")
+                            rootViewController.present(passwordVC, animated: true, completion: nil)
+                        }
+                    } else {
+                        print("No presented view controller found, presenting EnterPasswordViewController")
+                        rootViewController.present(passwordVC, animated: true, completion: nil)
+                    }
+                }
+            } else {
+                print("Root view controller is not available")
+            }
+        } else {
+            print("Failed to instantiate EnterPasswordViewController")
+        }
+    }
+    
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }

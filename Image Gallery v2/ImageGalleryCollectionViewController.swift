@@ -55,7 +55,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         }
                         
                         if self.imageGallery.galleryPW != "" {
-                            
+                            (UIApplication.shared.delegate as? AppDelegate)?.documentPassword = self.imageGallery.galleryPW
                             if self.showEnterPassword {
                                 let storyBoard = UIStoryboard(name: "Main", bundle: nil)
                                 let enterPasswordVC = storyBoard.instantiateViewController(withIdentifier: "enterPassword") as! EnterPasswordViewController
@@ -151,6 +151,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         save()
         dismiss(animated: true) {
             self.document?.close()
+            (UIApplication.shared.delegate as? AppDelegate)?.documentPassword = nil
         }
     }
     

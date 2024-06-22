@@ -21,29 +21,43 @@ class EnterPasswordViewController: UIViewController, UITextFieldDelegate {
     }
     
     weak var delegate: EnterPasswordViewContollerDelegate?
-    @IBOutlet weak var passwordText: UITextField!
+    @IBOutlet weak var passwordText: UITextField! {
+        didSet {
+            passwordText.isSecureTextEntry = true
+            passwordText.delegate = self
+        }
+    }
     @IBOutlet weak var enterPasswordLabel: UILabel!
-    @IBOutlet weak var submitButton: UIButton!
-    @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var submitButton: UIButton! {
+        didSet {
+            submitButton.layer.cornerRadius = 10.0
+            submitButton.accessibilityLabel = "Submit Password"
+            submitButton.accessibilityHint = "Submits the entered password for validation"
+        }
+    }
+    @IBOutlet weak var cancelButton: UIButton! {
+        didSet {
+            cancelButton.layer.cornerRadius = 10.0
+            cancelButton.accessibilityLabel = "Cancel"
+            cancelButton.accessibilityHint = "Cancels password entry."
+        }
+    }
     
     var correctPassword: String?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        submitButton.layer.cornerRadius = 10.0
-        cancelButton.layer.cornerRadius = 10.0
+        passwordText.becomeFirstResponder()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        passwordText.delegate = self
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard(_:)))
         self.view.addGestureRecognizer(tapGesture)
         
-        passwordText.becomeFirstResponder()
     }
     
     @objc func dismissKeyboard(_ sender: UITapGestureRecognizer) {
@@ -55,17 +69,27 @@ class EnterPasswordViewController: UIViewController, UITextFieldDelegate {
     }
     
     func checkPassword(){
-        if let pText = passwordText.text {
-            if let cText = correctPassword {
-                if pText == cText {
-                    delegate?.passwordResult(showImages: true, showEnterPassword: false)
-                    dismiss(animated: true)
-                }
-                else {
-                    enterPasswordLabel.text = "Incorrect Password"
-                }
-            }
+        guard let pText = passwordText.text, !pText.isEmpty else {
+            enterPasswordLabel.text = "Password cannot be empty"
+            return
         }
+        
+        if let cText = correctPassword, pText == cText {
+            delegate?.passwordResult(showImages: true, showEnterPassword: false)
+            dismiss(animated: true)
+        }
+        else {
+            enterPasswordLabel.text = "Incorrect Password"
+            enterPasswordLabel.textColor = .red
+            UIView.animate(withDuration: 0.1, animations: {
+                            self.enterPasswordLabel.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                        }) { _ in
+                            UIView.animate(withDuration: 0.1) {
+                                self.enterPasswordLabel.transform = CGAffineTransform.identity
+                            }
+                        }
+        }
+        
     }
     
     @IBAction func cancel(_ sender: UIButton) {

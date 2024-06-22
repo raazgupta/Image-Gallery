@@ -34,36 +34,6 @@
             endingLineNumber = "41"
             landmarkName = "tappedApplyButton()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E2519037-37FC-4F79-9811-BE3E0BFFA9C9 - e1223705ba3cf2a7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Image_Keeper.ImageSearchViewController.tappedApplyButton() -&gt; ()"
-                  moduleName = "Image Keeper"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rajgupta/Documents/Coding/iOS/Image%20Gallery%20v2/Image%20Gallery%20v2/ImageSearchViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "41"
-                  endingLineNumber = "41">
-               </Location>
-               <Location
-                  uuid = "E2519037-37FC-4F79-9811-BE3E0BFFA9C9 - a28295eef1b66d78"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Image_Keeper.ImageGalleryModel.galleryContent) -&gt; Swift.Bool in Image_Keeper.ImageSearchViewController.tappedApplyButton() -&gt; ()"
-                  moduleName = "Image Keeper"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rajgupta/Documents/Coding/iOS/Image%20Gallery%20v2/Image%20Gallery%20v2/ImageSearchViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -220,8 +190,8 @@
             filePath = "Image Gallery v2/ImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "705"
-            endingLineNumber = "705"
+            startingLineNumber = "706"
+            endingLineNumber = "706"
             landmarkName = "doSomethingWith(pwSwitch:pw:isEN:isPWEN:star1Probability:star2Probability:star3Probability:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -316,8 +286,8 @@
             filePath = "Image Gallery v2/ImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "277"
-            endingLineNumber = "277"
+            startingLineNumber = "278"
+            endingLineNumber = "278"
             landmarkName = "decrypt()"
             landmarkType = "7">
          </BreakpointContent>
@@ -364,8 +334,8 @@
             filePath = "Image Gallery v2/ImageGalleryCollectionViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
             landmarkName = "encrypt()"
             landmarkType = "7">
          </BreakpointContent>
@@ -400,6 +370,70 @@
             endingLineNumber = "107"
             landmarkName = "apply(_:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "89A4E53D-1E92-40F7-8364-006CD20A85FB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Image Gallery v2/Supporting Documents/AppDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
+            landmarkName = "showPasswordScreen()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "87FD9C39-BFBB-4908-A53C-0F88CE64F240"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Image Gallery v2/Supporting Documents/AppDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "showPasswordScreen()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "11601561-6B8A-4A75-ABC2-5EAD913C6493"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Image Gallery v2/ImageGalleryCollectionViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "close(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "57A3BDF3-DA04-419F-87A3-BDE9430BAEAE"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Image Gallery v2/Supporting Documents/AppDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "isPasswordProtected"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
