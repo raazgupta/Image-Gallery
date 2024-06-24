@@ -24,6 +24,18 @@ class ImageSearchViewController: UIViewController, UIScrollViewDelegate, UITextF
         searchText.autocapitalizationType = .words
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+        
+        // Add observer for updated image details
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdatedImageDetails), name: .updatedImageDetails, object: nil)
+    }
+    
+    @objc func handleUpdatedImageDetails(notification: Notification) {
+        if let imageURL = notification.userInfo?["imageURL"] {
+            let imageTitle = notification.userInfo?["imageTitle"]
+            let stars = notification.userInfo?["stars"]
+            let favorite = notification.userInfo?["favorite"]
+            imageGallery?.updateGalleryContent(byURL: imageURL as! String, newTitle: imageTitle as? String, newStars: stars as? Int, newFavorite: favorite as? Bool)
+        }
     }
     
     @objc func dismissKeyboard(){
@@ -68,6 +80,7 @@ class ImageSearchViewController: UIViewController, UIScrollViewDelegate, UITextF
             if let filteredVC = segue.destination as? FilteredImageGalleryCollectionViewController {
                 tappedApplyButton()
                 filteredVC.imageGallery = filteredImageGallery
+                filteredVC.showingFavorites = self.searchFavorite.isOn
             }
         }
     }

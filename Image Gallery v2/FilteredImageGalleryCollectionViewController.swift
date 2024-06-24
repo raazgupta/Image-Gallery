@@ -26,6 +26,7 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
         return collectionView?.collectionViewLayout as? UICollectionViewFlowLayout
     }
     weak var delegate: FilteredImageGalleryCollectionViewControllerDelegate?
+    var showingFavorites: Bool = false
     
     @IBAction func scaleCells(_ sender: UIPinchGestureRecognizer) {
         if sender.state == .ended {
@@ -108,35 +109,71 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
     
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil){ action in
-            
-            // Press image to delete
-            let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
-                if (self.imageGallery?.galleryContents.count)! > 0 {
-                    //let showIndex = self.showOrder[indexPath.row]
-                    let deletedURL = self.imageGallery?.galleryContents[indexPath.row].url
-                    NotificationCenter.default.post(name: .deletedImage, object: nil, userInfo: ["deletedURL": deletedURL! ])
-                    self.imageGallery?.galleryContents.remove(at: indexPath.row)
-                    //self.showOrder = self.imageGallery.determineShowOrder()
-                    collectionView.deleteItems(at: [indexPath])
-                    //self.save()
-                    self.refreshImageCells()
+            let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { action in
+                
+                let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil) { action in
+                    self.showDeleteConfirmationAlert(forItemAt: indexPath)
                 }
-            })
-            
-            // Press image to copy URL
-            let copyURL = UIAction(title: "Copy", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil, handler: { action in
-                if (self.imageGallery?.galleryContents.count)! > 0 {
-                    //let showIndex = self.showOrder[indexPath.row]
-                    let imageURL = self.imageGallery?.galleryContents[indexPath.row].url
-                    
-                    UIPasteboard.general.string = imageURL
+                
+                let copyURL = UIAction(title: "Copy URL", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil) { action in
+                    if let imageGallery = self.imageGallery {
+                        let imageURL = imageGallery.galleryContents[indexPath.row].url
+                        UIPasteboard.general.string = imageURL
+                    }
                 }
-            })
-            
-            return UIMenu(title: "", image: nil, identifier: nil, children: [delete, copyURL])
+                
+                let unfavorite = UIAction(title: "Unfavorite", image: UIImage(systemName: "heart.slash.fill"), identifier: nil) { action in
+                            self.unfavoriteImage(at: indexPath)
+                        }
+                
+                return UIMenu(title: "", image: nil, identifier: nil, children: [delete, copyURL, unfavorite])
+            }
+            return configuration
         }
-        return configuration
+    
+    private func unfavoriteImage(at indexPath: IndexPath) {
+        guard let imageGallery = self.imageGallery else { return }
+        let imageContent = imageGallery.galleryContents[indexPath.row]
+        
+        // Update the image content and notify
+        NotificationCenter.default.post(name: .updatedImageDetails, object: nil, userInfo: ["imageURL": imageContent.url, "favorite": false])
+        
+        // Remove the item from the collection view
+        collectionView.performBatchUpdates({
+            self.imageGallery?.galleryContents.remove(at: indexPath.row)
+            collectionView.deleteItems(at: [indexPath])
+        }, completion: nil)
+    }
+    
+    private func showDeleteConfirmationAlert(forItemAt indexPath: IndexPath) {
+        let alert = UIAlertController(title: "Delete Image", message: "Are you sure you want to delete this image?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { _ in
+            self.deleteImage(at: indexPath)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func deleteImage(at indexPath: IndexPath) {
+        guard var imageGallery = self.imageGallery else { return }
+        let deletedURL = imageGallery.galleryContents[indexPath.row].url
+        
+        // Update data source first
+        imageGallery.galleryContents.remove(at: indexPath.row)
+        self.imageGallery = imageGallery // Update the instance variable
+        
+        // Post notification
+        NotificationCenter.default.post(name: .deletedImage, object: nil, userInfo: ["deletedURL": deletedURL])
+        
+        // Perform the collection view update
+        collectionView.performBatchUpdates({
+            collectionView.deleteItems(at: [indexPath])
+        }, completion: nil)
+        
+        refreshImageCells()
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
