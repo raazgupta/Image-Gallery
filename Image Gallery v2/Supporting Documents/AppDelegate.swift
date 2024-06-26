@@ -17,6 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
                 window?.rootViewController?.present(lastVC, animated: true, completion: nil)
             }
         }
+        else {
+            documentPassword = nil
+        }
     }
     
     
