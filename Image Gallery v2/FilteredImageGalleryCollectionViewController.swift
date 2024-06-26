@@ -115,7 +115,7 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
                     self.showDeleteConfirmationAlert(forItemAt: indexPath)
                 }
                 
-                let copyURL = UIAction(title: "Copy URL", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil) { action in
+                let copyURL = UIAction(title: "Copy", image: UIImage(systemName: "square.and.arrow.up.fill"), identifier: nil) { action in
                     if let imageGallery = self.imageGallery {
                         let imageURL = imageGallery.galleryContents[indexPath.row].url
                         UIPasteboard.general.string = imageURL
@@ -124,9 +124,14 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
                 
                 let unfavorite = UIAction(title: "Unfavorite", image: UIImage(systemName: "heart.slash.fill"), identifier: nil) { action in
                             self.unfavoriteImage(at: indexPath)
-                        }
+                }
                 
-                return UIMenu(title: "", image: nil, identifier: nil, children: [delete, copyURL, unfavorite])
+                let favorite = UIAction(title: "Favorite", image: UIImage(systemName: "heart.fill"), identifier: nil) { action in
+                            self.favoriteImage(at: indexPath)
+                }
+                
+                
+                return UIMenu(title: "", image: nil, identifier: nil, children: [unfavorite, delete, copyURL, favorite])
             }
             return configuration
         }
@@ -143,6 +148,15 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
             self.imageGallery?.galleryContents.remove(at: indexPath.row)
             collectionView.deleteItems(at: [indexPath])
         }, completion: nil)
+    }
+    
+    private func favoriteImage(at indexPath: IndexPath) {
+        guard let imageGallery = self.imageGallery else { return }
+        let imageContent = imageGallery.galleryContents[indexPath.row]
+        
+        // Update the image content and notify
+        NotificationCenter.default.post(name: .updatedImageDetails, object: nil, userInfo: ["imageURL": imageContent.url, "favorite": true])
+        
     }
     
     private func showDeleteConfirmationAlert(forItemAt indexPath: IndexPath) {

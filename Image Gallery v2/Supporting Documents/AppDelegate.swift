@@ -17,12 +17,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
                 window?.rootViewController?.present(lastVC, animated: true, completion: nil)
             }
         }
+        else {
+            documentPassword = nil
+        }
     }
     
     
 
     var window: UIWindow?
     var documentPassword: String?
+    var isPasteLinkActive = false
     var lastActiveViewController: UIViewController?
     
     var isPasswordProtected: Bool {
@@ -42,9 +46,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-        lastActiveViewController = window?.rootViewController?.presentedViewController
-        if isPasswordProtected {
-            window?.rootViewController?.presentedViewController?.dismiss(animated: false)
+        if !isPasteLinkActive {
+            lastActiveViewController = window?.rootViewController?.presentedViewController
+            if isPasswordProtected {
+                window?.rootViewController?.presentedViewController?.dismiss(animated: false)
+            }
         }
     }
 

@@ -388,7 +388,7 @@
                             <barButtonItem image="dice.fill" catalog="system" id="d0y-fi-OWr">
                                 <color key="tintColor" red="0.26274509800000001" green="0.73333333329999995" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
-                                    <segue destination="fKJ-HO-gKh" kind="show" identifier="showGachaImage" id="OKe-2g-R9Q"/>
+                                    <action selector="gachaButtonTapped:" destination="Uh1-Fd-L2c" id="5MH-eN-qUm"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem image="magnifyingglass" catalog="system" id="eME-No-h6a">
@@ -564,16 +564,16 @@
             <objects>
                 <viewController id="2Gl-OB-0NS" customClass="ImageDetailsViewController" customModule="Image_Keeper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="6Zm-jq-4ow">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="716"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wbg-DP-KtV">
-                                <rect key="frame" x="95" y="308" width="282" height="34"/>
+                                <rect key="frame" x="95" y="244" width="282" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="py6-4S-fzo">
-                                <rect key="frame" x="95" y="394" width="282" height="32"/>
+                                <rect key="frame" x="95" y="330" width="282" height="32"/>
                                 <segments>
                                     <segment title="1"/>
                                     <segment title="2"/>
@@ -581,34 +581,34 @@
                                 </segments>
                             </segmentedControl>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Image Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uus-SL-Uwr">
-                                <rect key="frame" x="137" y="125" width="140" height="29"/>
+                                <rect key="frame" x="137" y="61" width="140" height="29"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" red="0.26274509800000001" green="0.73333333329999995" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YSR-yj-y7m">
-                                <rect key="frame" x="35" y="312" width="35" height="22"/>
+                                <rect key="frame" x="35" y="248" width="35" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <color key="textColor" red="0.26274509800000001" green="0.73333333329999995" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stars" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PF4-6M-ILf">
-                                <rect key="frame" x="35" y="399" width="42" height="22"/>
+                                <rect key="frame" x="35" y="335" width="42" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <color key="textColor" red="0.26274509800000001" green="0.73333333329999995" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Favorite" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KKV-yB-GUd">
-                                <rect key="frame" x="35" y="488" width="64" height="22"/>
+                                <rect key="frame" x="35" y="424" width="64" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <color key="textColor" red="0.26274509800000001" green="0.73333333329999995" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="fxU-Ee-QIC">
-                                <rect key="frame" x="137" y="487" width="51" height="31"/>
+                                <rect key="frame" x="137" y="423" width="51" height="31"/>
                             </switch>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Do3-EL-Uk9">
-                                <rect key="frame" x="173.33333333333334" y="521.66666666666663" width="67.666666666666657" height="34.333333333333371"/>
+                                <rect key="frame" x="173.33333333333334" y="501.66666666666669" width="67.666666666666657" height="34.333333333333314"/>
                                 <color key="backgroundColor" red="0.26274509800000001" green="0.73333333329999995" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34.333333333333371" id="gcz-Op-Yct"/>
@@ -1156,7 +1156,7 @@
         <!--Image View Controller-->
         <scene sceneID="2G7-GV-Ywq">
             <objects>
-                <viewController id="fKJ-HO-gKh" customClass="ImageViewController" customModule="Image_Keeper" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ImageViewController" id="fKJ-HO-gKh" customClass="ImageViewController" customModule="Image_Keeper" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="AhM-Yd-FfP">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

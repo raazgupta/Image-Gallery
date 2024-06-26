@@ -85,9 +85,15 @@ struct ImageGalleryModel: Codable {
         // Iterate over all galleryContents and update items that match the URL
         for i in 0..<galleryContents.count {
             if galleryContents[i].url == url {
-                galleryContents[i].imageTitle = newTitle
-                galleryContents[i].stars = newStars
-                galleryContents[i].favorite = newFavorite
+                if let newTitle = newTitle {
+                    galleryContents[i].imageTitle = newTitle
+                }
+                if let newStars = newStars {
+                    galleryContents[i].stars = newStars
+                }
+                if let newFavorite = newFavorite {
+                    galleryContents[i].favorite = newFavorite
+                }
             }
         }
     }

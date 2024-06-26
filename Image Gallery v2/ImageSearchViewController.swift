@@ -50,23 +50,22 @@ class ImageSearchViewController: UIViewController, UIScrollViewDelegate, UITextF
     
     func tappedApplyButton() {
         
-        let filteredContents = imageGallery?.galleryContents.filter{ content in
+        let filteredContents = imageGallery?.galleryContents.filter { content in
             var matchesText: Bool
-            matchesText = true
-            if var searchTextString = self.searchText.text {
+            if let searchTextString = self.searchText.text?.trimmingCharacters(in: .whitespaces), !searchTextString.isEmpty {
                 if let contentImageTitle = content.imageTitle {
-                    searchTextString = searchTextString.trimmingCharacters(in: .whitespaces)
-                    if searchTextString == "" {
-                        matchesText = true
-                    }
-                    else {
-                        let contentImageTitleLowerCased = contentImageTitle.lowercased()
-                        matchesText = contentImageTitleLowerCased.contains(searchTextString.lowercased())
-                    }
+                    let contentImageTitleLowerCased = contentImageTitle.lowercased()
+                    matchesText = contentImageTitleLowerCased.contains(searchTextString.lowercased())
+                } else {
+                    matchesText = false
                 }
+            } else {
+                matchesText = true
             }
+            
             let matchesStars = self.searchStars.selectedSegmentIndex == 0 || content.stars == self.searchStars.selectedSegmentIndex
             let matchesFavorite = !self.searchFavorite.isOn || content.favorite == self.searchFavorite.isOn
+            
             return matchesText && matchesStars && matchesFavorite
         }
         if let filteredContents = filteredContents {

@@ -689,51 +689,77 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 searchVC.imageGallery = imageGallery
             }
         }
-        if segue.identifier == "showGachaImage" {
-            if let imageVC = segue.destination.contents as? ImageViewController {
-                
-                let imageGalleryContent = gachaGallery()
-                
-                if let imageGalleryContent = imageGalleryContent {
-                    if let url = URL(string: imageGalleryContent.url) {
-                        imageVC.imageURL = url
-                    }
-                    imageVC.imageTitle = imageGalleryContent.imageTitle
-                    imageVC.stars = imageGalleryContent.stars
-                    imageVC.favorite = imageGalleryContent.favorite
+    }
+    
+    @IBAction func gachaButtonTapped(_ sender: Any) {
+        initiateGachaDraw()
+    }
+    
+    private func initiateGachaDraw() {
+        showSlotMachineAnimation { finalStars in
+            self.presentGachaImage(for: finalStars)
+        }
+    }
+    
+    private func presentGachaImage(for starLevel: Int) {
+        guard let imageGalleryContent = gachaGallery(starLevel: starLevel) else { return }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let imageVC = storyboard.instantiateViewController(withIdentifier: "ImageViewController") as? ImageViewController {
+            if let url = URL(string: imageGalleryContent.url) {
+                imageVC.imageURL = url
+            }
+            imageVC.imageTitle = imageGalleryContent.imageTitle
+            imageVC.stars = imageGalleryContent.stars
+            imageVC.favorite = imageGalleryContent.favorite
+            
+            navigationController?.pushViewController(imageVC, animated: true)
+        }
+    }
+    
+    
+    private func showSlotMachineAnimation(completion: @escaping (Int) -> Void) {
+        let slotMachineView = SlotMachineView(frame: view.bounds)
+        slotMachineView.alpha = 0.0
+        view.addSubview(slotMachineView)
+        
+        UIView.animate(withDuration: 0.2, animations: {
+            slotMachineView.alpha = 1.0
+        }) { _ in
+            let finalStars = self.pickStarLevelBasedOnProbability()
+            
+            slotMachineView.startAnimation(finalStars: finalStars) {
+                UIView.animate(withDuration: 0.2, animations: {
+                    slotMachineView.alpha = 0.0
+                }) { _ in
+                    slotMachineView.removeFromSuperview()
+                    completion(finalStars)
                 }
-                
             }
         }
     }
     
-    private func gachaGallery() -> ImageGalleryModel.galleryContent? {
-        // Ensure there are images in the gallery
-        guard !imageGallery.galleryContents.isEmpty else { return nil }
-
-        // Extract star probabilities
-        let star1Probability = Double (imageGallery.starProbabilityValues?.star1 ?? 60.0)
-        let star2Probability = Double (imageGallery.starProbabilityValues?.star2 ?? 30.0)
-
-        // Randomly pick a star level based on probabilities
+    private func pickStarLevelBasedOnProbability() -> Int {
+        let star1Probability = Double(imageGallery.starProbabilityValues?.star1 ?? 60.0)
+        let star2Probability = Double(imageGallery.starProbabilityValues?.star2 ?? 30.0)
+        
         let randomNumber = Double.random(in: 0..<100)
-        let starLevel: Int
         if randomNumber < star1Probability {
-            starLevel = 1
+            return 1
         } else if randomNumber < star1Probability + star2Probability {
-            starLevel = 2
+            return 2
         } else {
-            starLevel = 3
+            return 3
         }
+        
+    }
+    
+    private func gachaGallery(starLevel: Int) -> ImageGalleryModel.galleryContent? {
+            guard !imageGallery.galleryContents.isEmpty else { return nil }
 
-        // Filter images by the chosen star level
-        let filteredImages = imageGallery.galleryContents.filter { $0.stars == starLevel }
-
-        // If no images at this star level, or if there's a logic error, default to all images
-        let imagesToChooseFrom = filteredImages.isEmpty ? imageGallery.galleryContents : filteredImages
-
-        // Pick a random image from the set
-        return imagesToChooseFrom.randomElement()
+            let filteredImages = imageGallery.galleryContents.filter { $0.stars == starLevel }
+            let imagesToChooseFrom = filteredImages.isEmpty ? imageGallery.galleryContents : filteredImages
+            return imagesToChooseFrom.randomElement()
     }
 
     
@@ -816,8 +842,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     */
     
     @objc private func pasteLink() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        
         if UIPasteboard.general.hasURLs {
             if let url = UIPasteboard.general.url {
+                appDelegate.isPasteLinkActive = true
                 getImageFromURL(url: url, completion: { [weak self] (image) in
                     DispatchQueue.main.async {
                         self?.collectionView.refreshControl?.endRefreshing()
@@ -831,6 +860,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                             print("Not an image")
                             self?.presentBadWarningAfterDelay()
                         }
+                        appDelegate.isPasteLinkActive = false
                     }
                 })
             }

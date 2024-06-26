@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD003D8E2C2E01FA003132AD /* SlotMachineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD003D8D2C2E01FA003132AD /* SlotMachineView.swift */; };
 		AD377D0F24F346DA00D0B860 /* ImageDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D0E24F346DA00D0B860 /* ImageDocument.swift */; };
 		AD377D1124F465A700D0B860 /* BlankScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1024F465A700D0B860 /* BlankScreenViewController.swift */; };
 		AD377D1324F47D3000D0B860 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD377D1224F47D3000D0B860 /* HelpViewController.swift */; };
@@ -31,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AD003D8D2C2E01FA003132AD /* SlotMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotMachineView.swift; sourceTree = "<group>"; };
 		AD377D0E24F346DA00D0B860 /* ImageDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDocument.swift; sourceTree = "<group>"; };
 		AD377D1024F465A700D0B860 /* BlankScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlankScreenViewController.swift; sourceTree = "<group>"; };
 		AD377D1224F47D3000D0B860 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				AD91B72724F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift */,
 				AD6BD3622B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift */,
 				AD377D1424F5CAA300D0B860 /* SecurityOptionsViewController.swift */,
+				AD003D8D2C2E01FA003132AD /* SlotMachineView.swift */,
 				AD99A12D217BDB9900A288B4 /* Utilities.swift */,
 				AD99A116217BD6ED00A288B4 /* Main.storyboard */,
 				AD99A124217BDB0500A288B4 /* Supporting Documents */,
@@ -212,6 +215,7 @@
 				AD6BD3632B9515FE004E91A7 /* FilteredImageGalleryCollectionViewController.swift in Sources */,
 				AD99A12E217BDB9900A288B4 /* Utilities.swift in Sources */,
 				AD91B72824F9BB98002449E6 /* RandomImageGalleryCollectionViewController.swift in Sources */,
+				AD003D8E2C2E01FA003132AD /* SlotMachineView.swift in Sources */,
 				AD99A12C217BDB9000A288B4 /* ImageGalleryCollectionViewCell.swift in Sources */,
 				AD377D1324F47D3000D0B860 /* HelpViewController.swift in Sources */,
 				AD6DE2CD2BAA3F43008DA2AF /* ImageViewController2.swift in Sources */,
