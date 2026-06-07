@@ -18,14 +18,14 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         
         delegate = self
         
-        allowsDocumentCreation = true
+        allowsDocumentCreation = false
         allowsPickingMultipleItems = false
         
         // Update the style of the UIDocumentBrowserViewController
         browserUserInterfaceStyle = .dark
         view.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         
-        let helpButton = UIBarButtonItem(title: "Help", style: .plain, target: self, action: #selector(settingsButton(sender:)))
+        let helpButton = UIBarButtonItem(title: "Help", style: .plain, target: self, action: #selector(showHelp(sender:)))
         additionalTrailingNavigationBarButtonItems = [helpButton]
         
         // Specify the allowed content types of your application via the Info.plist.
@@ -37,18 +37,21 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         } catch {
             print(error)
         }
-        if template != nil {
-            allowsDocumentCreation = FileManager.default.createFile(atPath: template!.path, contents: Data())
-            
+        if let template {
+            if FileManager.default.fileExists(atPath: template.path) {
+                allowsDocumentCreation = true
+            } else {
+                allowsDocumentCreation = FileManager.default.createFile(atPath: template.path, contents: Data())
+            }
         }
         
     }
     
-    @objc func settingsButton(sender: UIBarButtonItem){
+    @objc func showHelp(sender: UIBarButtonItem){
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        let settingsVC = storyBoard.instantiateViewController(withIdentifier: "settingsScreen")
-        settingsVC.modalPresentationStyle = .fullScreen
-        present(settingsVC, animated: true)
+        let helpVC = storyBoard.instantiateViewController(withIdentifier: "helpScreen")
+        helpVC.modalPresentationStyle = .fullScreen
+        present(helpVC, animated: true)
     }
     
     
@@ -105,4 +108,3 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
  
     }
 }
-

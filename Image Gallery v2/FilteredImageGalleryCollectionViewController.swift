@@ -11,12 +11,16 @@ import Foundation
 import UIKit
 
 private let reuseIdentifier = "ImageCell"
+private let bulkGalleryPasteboardType = "com.soulfulmachine.image-gallery.bulk-copy"
 
 protocol FilteredImageGalleryCollectionViewControllerDelegate: NSObjectProtocol {
     func deleteFilteredImage(url:String)
 }
 
 class FilteredImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+    private struct BulkClipboardPayload: Codable {
+        let items: [ImageGalleryModel.galleryContent]
+    }
 
     var tappedImageIndex: Int?
     
@@ -27,6 +31,9 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
     }
     weak var delegate: FilteredImageGalleryCollectionViewControllerDelegate?
     var showingFavorites: Bool = false
+    private var isBulkSelectionMode = false
+    private var normalNavigationTitle: String?
+    private var normalRightBarButtonItems: [UIBarButtonItem] = []
     
     @IBAction func scaleCells(_ sender: UIPinchGestureRecognizer) {
         if sender.state == .ended {
@@ -48,6 +55,9 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
 
         // Register cell classes
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView?.allowsMultipleSelection = false
+        normalNavigationTitle = navigationItem.title
+        normalRightBarButtonItems = navigationItem.rightBarButtonItems ?? []
 
         // Do any additional setup after loading the view.
         NotificationCenter.default.addObserver(self, selector: #selector(handleUpdatedImageDetails), name: .updatedImageDetails, object: nil)
@@ -129,9 +139,13 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
                 let favorite = UIAction(title: "Favorite", image: UIImage(systemName: "heart.fill"), identifier: nil) { action in
                             self.favoriteImage(at: indexPath)
                 }
+
+                let selectMultiple = UIAction(title: "Select Multiple", image: UIImage(systemName: "checklist"), identifier: nil) { action in
+                    self.enterBulkSelectionMode(selecting: indexPath)
+                }
                 
                 
-                return UIMenu(title: "", image: nil, identifier: nil, children: [unfavorite, delete, copyURL, favorite])
+                return UIMenu(title: "", image: nil, identifier: nil, children: [unfavorite, delete, copyURL, favorite, selectMultiple])
             }
             return configuration
         }
@@ -194,6 +208,18 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
         //let showOrderCell = showOrder[indexPath.item]
         return CGSize(width: imageCellWidth, height: imageCellWidth * (imageGallery?.galleryContents[indexPath.item].aspectRatio ?? 1.0))
     }
+
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if isBulkSelectionMode {
+            updateBulkSelectionControls()
+        }
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if isBulkSelectionMode {
+            updateBulkSelectionControls()
+        }
+    }
     
     // Segue to show the full image in new MVC
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -218,6 +244,13 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
             }
         }
     }
+
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "showImage3" && isBulkSelectionMode {
+            return false
+        }
+        return true
+    }
     
 
     // MARK: UICollectionViewDelegate
@@ -235,6 +268,76 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
         return true
     }
     */
+
+    private func enterBulkSelectionMode(selecting indexPath: IndexPath? = nil) {
+        guard !isBulkSelectionMode else { return }
+
+        isBulkSelectionMode = true
+        normalNavigationTitle = navigationItem.title
+        normalRightBarButtonItems = navigationItem.rightBarButtonItems ?? []
+        collectionView?.allowsMultipleSelection = true
+
+        if let indexPath = indexPath {
+            collectionView?.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        }
+
+        updateBulkSelectionControls()
+    }
+
+    @objc private func cancelBulkSelection() {
+        exitBulkSelectionMode()
+    }
+
+    private func exitBulkSelectionMode() {
+        isBulkSelectionMode = false
+        collectionView?.allowsMultipleSelection = false
+        collectionView?.indexPathsForSelectedItems?.forEach {
+            collectionView?.deselectItem(at: $0, animated: false)
+        }
+        navigationItem.title = normalNavigationTitle
+        navigationItem.rightBarButtonItems = normalRightBarButtonItems
+    }
+
+    private func updateBulkSelectionControls() {
+        let selectedCount = collectionView?.indexPathsForSelectedItems?.count ?? 0
+        navigationItem.title = selectedCount == 0 ? "Select Images" : "\(selectedCount) Selected"
+
+        let copyButton = UIBarButtonItem(
+            image: UIImage(systemName: "doc.on.doc"),
+            style: .plain,
+            target: self,
+            action: #selector(copySelectedImages)
+        )
+        copyButton.isEnabled = selectedCount > 0
+
+        let cancelButton = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(cancelBulkSelection)
+        )
+
+        navigationItem.rightBarButtonItems = [cancelButton, copyButton]
+    }
+
+    @objc private func copySelectedImages() {
+        guard
+            let selectedIndexPaths = collectionView?.indexPathsForSelectedItems,
+            !selectedIndexPaths.isEmpty,
+            let imageGallery = imageGallery
+        else {
+            return
+        }
+
+        let items = selectedIndexPaths
+            .sorted { $0.item < $1.item }
+            .map { imageGallery.galleryContents[$0.item] }
+
+        let payload = BulkClipboardPayload(items: items)
+        guard let payloadData = try? JSONEncoder().encode(payload) else { return }
+
+        UIPasteboard.general.setData(payloadData, forPasteboardType: bulkGalleryPasteboardType)
+        exitBulkSelectionMode()
+    }
 
     /*
     // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item

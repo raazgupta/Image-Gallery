@@ -10,6 +10,34 @@ import Foundation
 import UIKit
 
 struct ImageGalleryModel: Codable {
+    enum GachaAnimationStyle: String, Codable, CaseIterable {
+        case mysteryCard
+        case spinningStar
+        case airport
+        case slotMachine
+
+        var displayName: String {
+            switch self {
+            case .mysteryCard:
+                return "Mystery Card"
+            case .spinningStar:
+                return "Spinning Star"
+            case .airport:
+                return "Airport"
+            case .slotMachine:
+                return "Slot Machine"
+            }
+        }
+
+        var requiresPremiumUnlock: Bool {
+            switch self {
+            case .mysteryCard:
+                return false
+            case .spinningStar, .airport, .slotMachine:
+                return true
+            }
+        }
+    }
     
     var galleryTitle: String
     var galleryPW: String?
@@ -17,6 +45,7 @@ struct ImageGalleryModel: Codable {
     var galleryEN: Bool?
     var galleryContents = [galleryContent]()
     var starProbabilityValues: starProbabilities?
+    var gachaAnimationStyle: GachaAnimationStyle?
     
     struct galleryContent: Codable {
         let url: String
@@ -39,6 +68,7 @@ struct ImageGalleryModel: Codable {
         galleryEN = false
         galleryContents = []
         starProbabilityValues = starProbabilities(star1: 60.0, star2: 30.0, star3: 10.0)
+        gachaAnimationStyle = .mysteryCard
     }
     
     // JSON encoder and decoder

@@ -9,6 +9,8 @@
 import UIKit
 
 class HelpViewController: UIViewController {
+    private let bodyColor = UIColor.black
+    private let headingColor = UIColor(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -23,64 +25,7 @@ class HelpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-        let font = UIFont(name: "American Typewriter", size: 18)
-        let attributes = [NSAttributedString.Key.font: font]
-        let aString1 = NSMutableAttributedString(string: """
-        Welcome to the Image Store App. This app can be used to store image links from the web or image files. If you are saving an image from the web, this app provides the option to store the web link instead of the image file to save disk space. This allows you to store a large number of web images without worrying about disk space.\n
-        For storing web image links, start by  tapping: Create Document. On your web browser, tap and hold image until Copy option is displayed. Tap Copy. In the app,  tap on the document that you have created, tap the
-        """,attributes: attributes as [NSAttributedString.Key : Any])
-        
-        let imageString1: NSAttributedString
-        
-        let imageAttachment1 = NSTextAttachment()
-        imageAttachment1.image = UIImage(systemName:"arrow.down.doc.fill")
-        imageString1 = NSAttributedString(attachment: imageAttachment1)
-        aString1.append(imageString1)
-        
-        let aString2 = NSMutableAttributedString(string: " button to store the image. You can tap on an image Thumbnail to view the image.\n",attributes: attributes as [NSAttributedString.Key : Any])
-        aString1.append(aString2)
-        
-        let aString5 = NSMutableAttributedString(string: "Another way to save images is as follows. When you open the app, tap and hold on a blank area of the screen. You will see the Paste option. Tap on Paste to save the images in that folder.\n",attributes: attributes as [NSAttributedString.Key : Any])
-        aString1.append(aString5)
-        
-        let imageString2: NSAttributedString
-       
-        let imageAttachment2 = NSTextAttachment()
-        imageAttachment2.image = UIImage(systemName:"square.stack.fill")
-        imageString2 = NSAttributedString(attachment: imageAttachment2)
-
-        aString1.append(imageString2)
-        
-        let aString3 = NSMutableAttributedString(string: " button will show your images shuffled in a random order.\n",attributes: attributes as [NSAttributedString.Key : Any])
-        aString1.append(aString3)
-        
-        let imageString3: NSAttributedString
-        
-        let imageAttachment3 = NSTextAttachment()
-        imageAttachment3.image = UIImage(systemName:"trash")
-        imageString3 = NSAttributedString(attachment: imageAttachment3)
-
-        aString1.append(imageString3)
-        
-        let aString4 = NSMutableAttributedString(string: " button will delete the top left image.\n",attributes: attributes as [NSAttributedString.Key : Any])
-        aString1.append(aString4)
-        
-        
-        let imageString5: NSAttributedString
-        
-        let imageAttachment5 = NSTextAttachment()
-        imageAttachment5.image = UIImage(systemName:"gear")
-        imageString5 = NSAttributedString(attachment: imageAttachment5)
-        
-        aString1.append(imageString5)
-        
-        let aString6 = NSMutableAttributedString(string: " button will take you to the Settings view. You can set a password to open this file, encrypt the contents of the file and set star probabilities.\n",attributes: attributes as [NSAttributedString.Key : Any])
-        aString1.append(aString6)
-        
-        
-        
-        helpText.attributedText = aString1
+        helpText.attributedText = makeHelpText()
     }
     
     @IBOutlet weak var helpText: UITextView!
@@ -88,6 +33,80 @@ class HelpViewController: UIViewController {
     
     @IBAction func done(_ sender: UIButton) {
         dismiss(animated: true)
+    }
+
+    private func makeHelpText() -> NSAttributedString {
+        let text = NSMutableAttributedString()
+
+        appendHeading("Getting Started", to: text)
+        appendBody("Image Store lets you save image links from the web or store image files directly. Saving links instead of full files helps reduce disk usage.\n\n", to: text)
+
+        appendHeading("Saving Images", to: text)
+        appendBullet(icon: "arrow.down.doc.fill", text: "Open a gallery, copy an image link in your browser, then tap the download button to add it.", to: text)
+        appendBullet(text: "You can also tap and hold on an empty area inside the gallery and choose Paste.", to: text)
+        appendBody("\n", to: text)
+
+        appendHeading("Gallery Controls", to: text)
+        appendBullet(icon: "gear", text: "Settings: configure password protection, encryption, star probabilities, and gacha animation style.", to: text)
+        appendBullet(icon: "dice.fill", text: "Random Roll: tap the button, or pull down from the top of the gallery, to reveal a saved image with an animation.", to: text)
+        appendBullet(icon: "magnifyingglass", text: "Search: filter the gallery to find matching images.", to: text)
+        appendBullet(icon: "info.circle.fill", text: "Image Details: open the image details screen to set the title, star level, and favorite status for an image.", to: text)
+        appendBullet(icon: "arrow.down.document.fill", text: "Download: add the latest copied image link or bulk-paste copied gallery items.", to: text)
+        appendBullet(icon: "square.stack.fill", text: "Random Image: show your gallery images in a shuffled random order.", to: text)
+        appendBullet(icon: "trash", text: "Delete Image: remove the top image after confirming the deletion.", to: text)
+        appendBullet(icon: "questionmark.circle", text: "Help: reopen this guide at any time.", to: text)
+        appendBody("\n", to: text)
+
+        appendHeading("Random Roll Animations", to: text)
+        appendBody("Mystery Card is included for free. Additional random roll animations can be unlocked with a one-time $3 purchase from Settings.\n", to: text)
+        appendBody("\nIn case you encounter any bugs or issues please contact: soulfulmachine84@gmail.com\n", to: text)
+
+        return text
+    }
+
+    private func appendHeading(_ text: String, to attributedString: NSMutableAttributedString) {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.paragraphSpacing = 8
+        paragraphStyle.lineSpacing = 2
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 22, weight: .bold),
+            .foregroundColor: headingColor,
+            .paragraphStyle: paragraphStyle
+        ]
+
+        attributedString.append(NSAttributedString(string: text + "\n", attributes: attributes))
+    }
+
+    private func appendBody(_ text: String, to attributedString: NSMutableAttributedString) {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.paragraphSpacing = 8
+        paragraphStyle.lineSpacing = 4
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont(name: "American Typewriter", size: 18) ?? UIFont.systemFont(ofSize: 18),
+            .foregroundColor: bodyColor,
+            .paragraphStyle: paragraphStyle
+        ]
+
+        attributedString.append(NSAttributedString(string: text, attributes: attributes))
+    }
+
+    private func appendBullet(icon: String? = nil, text: String, to attributedString: NSMutableAttributedString) {
+        if let icon {
+            attributedString.append(makeIconAttachment(systemName: icon))
+            appendBody("  " + text + "\n", to: attributedString)
+        } else {
+            appendBody("• " + text + "\n", to: attributedString)
+        }
+    }
+
+    private func makeIconAttachment(systemName: String) -> NSAttributedString {
+        let attachment = NSTextAttachment()
+        let configuration = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
+        attachment.image = UIImage(systemName: systemName, withConfiguration: configuration)?.withTintColor(headingColor, renderingMode: .alwaysOriginal)
+        attachment.bounds = CGRect(x: 0, y: -3, width: 18, height: 18)
+        return NSAttributedString(attachment: attachment)
     }
     
     /*

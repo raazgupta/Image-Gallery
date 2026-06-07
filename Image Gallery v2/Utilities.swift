@@ -223,7 +223,7 @@ extension UIView {
     }
 }
 
-extension UIDocument.State: CustomStringConvertible {
+extension UIDocument.State: @retroactive CustomStringConvertible {
     public var description: String {
         return [
             UIDocument.State.normal.rawValue:".normal",
@@ -234,6 +234,10 @@ extension UIDocument.State: CustomStringConvertible {
             UIDocument.State.progressAvailable.rawValue:".progressAvailable"
             ][rawValue] ?? String(rawValue)
     }
+}
+
+extension Notification.Name {
+    static let premiumAnimationsStatusDidChange = Notification.Name("premiumAnimationsStatusDidChange")
 }
 
 func getImageFromURL(url: URL, completion: @escaping (_ image:UIImage?)->Void) {
@@ -275,5 +279,3 @@ func getImageFromURL(url: URL, completion: @escaping (_ image:UIImage?)->Void) {
     
     
 }
-
-

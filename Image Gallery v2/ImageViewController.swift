@@ -13,6 +13,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     var imageTitle: String?
     var stars: Int?
     var favorite: Bool?
+    private var hasAppliedInitialZoom = false
 
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
@@ -45,6 +46,8 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             imageView.image = newValue
             imageView.sizeToFit()
             scrollView?.contentSize = imageView.frame.size
+            hasAppliedInitialZoom = false
+            updateZoomScaleToFitIfNeeded()
             spinner?.stopAnimating()
         }
     }
@@ -58,9 +61,19 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             title = imageTitle
         }
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateZoomScaleToFitIfNeeded()
+        centerImageIfNeeded()
+    }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
+    }
+
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        centerImageIfNeeded()
     }
     
     
@@ -106,7 +119,36 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             }
         }
     }
-    
+
+    private func updateZoomScaleToFitIfNeeded() {
+        guard
+            !hasAppliedInitialZoom,
+            let scrollView = scrollView,
+            let image = imageView.image,
+            scrollView.bounds.width > 0,
+            scrollView.bounds.height > 0
+        else { return }
+
+        let widthScale = scrollView.bounds.width / image.size.width
+        let heightScale = scrollView.bounds.height / image.size.height
+        let fitScale = min(widthScale, heightScale)
+
+        scrollView.minimumZoomScale = min(fitScale, 1.0)
+        scrollView.zoomScale = fitScale
+        hasAppliedInitialZoom = true
+    }
+
+    private func centerImageIfNeeded() {
+        guard let scrollView = scrollView else { return }
+
+        let horizontalInset = max((scrollView.bounds.width - imageView.frame.width) / 2, 0)
+        let topInset = view.safeAreaInsets.top
+        scrollView.contentInset = UIEdgeInsets(
+            top: topInset,
+            left: horizontalInset,
+            bottom: 0,
+            right: horizontalInset
+        )
+        scrollView.contentOffset = CGPoint(x: -horizontalInset, y: -topInset)
+    }
 }
-
-

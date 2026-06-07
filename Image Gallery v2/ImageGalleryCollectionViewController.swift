@@ -9,8 +9,12 @@
 import UIKit
 
 private let reuseIdentifier = "Cell"
+private let bulkGalleryPasteboardType = "com.soulfulmachine.image-gallery.bulk-copy"
 
 class ImageGalleryCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate, SecurityOptionsViewControllerDelegate, EnterPasswordViewContollerDelegate {
+    private struct BulkClipboardPayload: Codable {
+        let items: [ImageGalleryModel.galleryContent]
+    }
     
     // Doing Document Browser View Controller things
     
@@ -44,6 +48,9 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                         // Check if starProbabilityValues is nil and initialize it if so
                         if self.imageGallery.starProbabilityValues == nil {
                             self.imageGallery.starProbabilityValues = ImageGalleryModel.starProbabilities(star1: 60, star2: 30, star3: 10)
+                        }
+                        if self.imageGallery.gachaAnimationStyle == nil {
+                            self.imageGallery.gachaAnimationStyle = .mysteryCard
                         }
                         
                         if self.imageGallery.galleryPW != "" && self.imageGallery.galleryEN == true {
@@ -165,6 +172,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
         newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
         newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
+        newImageGallery.gachaAnimationStyle = imageGallery.gachaAnimationStyle ?? .mysteryCard
         
         let pwLength = UInt32(imageGallery.galleryPW!.count)
         
@@ -257,6 +265,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         newImageGallery.starProbabilityValues?.star1 = imageGallery.starProbabilityValues?.star1 ?? 60.0
         newImageGallery.starProbabilityValues?.star2 = imageGallery.starProbabilityValues?.star2 ?? 30.0
         newImageGallery.starProbabilityValues?.star3 = imageGallery.starProbabilityValues?.star3 ?? 10.0
+        newImageGallery.gachaAnimationStyle = imageGallery.gachaAnimationStyle ?? .mysteryCard
         
         let pwLength = UInt32(imageGallery.galleryPW!.count)
         
@@ -347,6 +356,10 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     var imageGallery: ImageGalleryModel = ImageGalleryModel(title: "Gallery")
     //var showOrder: [Int] = []
     var imageCellWidth: CGFloat = 180.0
+    private var isPerformingGacha = false
+    private var isBulkSelectionMode = false
+    private var normalNavigationTitle: String?
+    private var normalRightBarButtonItems: [UIBarButtonItem] = []
     
     @IBAction func scaleCells(_ sender: UIPinchGestureRecognizer) {
         if sender.state == .ended {
@@ -377,9 +390,14 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         
         // Enble dragging on iphone
         collectionView?.dragInteractionEnabled = true
+        collectionView?.alwaysBounceVertical = true
+        collectionView?.allowsMultipleSelection = false
+        normalNavigationTitle = navigationItem.title
+        configureNavigationBarItems()
+        normalRightBarButtonItems = navigationItem.rightBarButtonItems ?? []
         
         self.collectionView.refreshControl = UIRefreshControl()
-        self.collectionView.refreshControl?.addTarget(self, action: #selector(pasteLink), for: .valueChanged)
+        self.collectionView.refreshControl?.addTarget(self, action: #selector(triggerPullToRoll), for: .valueChanged)
         
         view.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
@@ -396,6 +414,18 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         //NotificationCenter.default.addObserver(self, selector: #selector(refreshImageCells), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         
+    }
+
+    private func configureNavigationBarItems() {
+        guard let items = navigationItem.rightBarButtonItems, items.count >= 7 else { return }
+
+        items[0].title = "Help"
+        items[1].title = "Delete Image"
+        items[2].title = "Random Image"
+        items[3].title = "Download"
+        items[4].title = "Search"
+        items[5].title = "Random Roll"
+        items[6].title = "Settings"
     }
     
     @objc func handleDeletedImage(notification: Notification) {
@@ -486,15 +516,26 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 }
             })
             
-            let pasteImage = UIAction(title: "Paste", image: UIImage(systemName: "arrow.down.doc.fill"), identifier: nil, handler: { action in
-                self.pasteLinkAtIndexPath(at: indexPath)
+            let pasteImage = UIAction(title: "Paste", image: UIImage(systemName: "arrow.down.document.fill"), identifier: nil, handler: { action in
+                self.pasteContentAtIndexPath(at: indexPath)
+            })
+
+            let selectMultiple = UIAction(title: "Select Multiple", image: UIImage(systemName: "checklist"), identifier: nil, handler: { action in
+                self.enterBulkSelectionMode(selecting: indexPath)
             })
             
-            return UIMenu(title: "", image: nil, identifier: nil, children: [delete, favoriteImage, copyURL, pasteImage])
+            return UIMenu(title: "", image: nil, identifier: nil, children: [delete, favoriteImage, copyURL, pasteImage, selectMultiple])
         }
         return configuration
     }
     
+    private func pasteContentAtIndexPath(at indexPath: IndexPath) {
+        if pasteBulkGalleryContents(at: indexPath.row + 1) {
+            return
+        }
+        pasteLinkAtIndexPath(at: indexPath)
+    }
+
     private func pasteLinkAtIndexPath(at indexPath: IndexPath) {
         if UIPasteboard.general.hasURLs {
             if let url = UIPasteboard.general.url {
@@ -545,7 +586,18 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         return CGSize(width: imageCellWidth, height: imageCellWidth * imageGallery.galleryContents[indexPath.item].aspectRatio)
     }
 
-    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if isBulkSelectionMode {
+            updateBulkSelectionControls()
+        }
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if isBulkSelectionMode {
+            updateBulkSelectionControls()
+        }
+    }
+
     // Dragging and Dropping within Collection View
     
     // Drag
@@ -676,6 +728,7 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             securityVC.galleryPW = imageGallery.galleryPW ?? ""
             securityVC.galleryEN = imageGallery.galleryEN ?? false
             securityVC.galleryPWEN = imageGallery.galleryPWEN ?? false
+            securityVC.gachaAnimationStyle = imageGallery.gachaAnimationStyle ?? .mysteryCard
             //save()
             //self.document?.close()
         }
@@ -690,27 +743,51 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             }
         }
     }
+
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "showImage" && isBulkSelectionMode {
+            return false
+        }
+        return true
+    }
     
     @IBAction func gachaButtonTapped(_ sender: Any) {
         initiateGachaDraw()
     }
     
     private func initiateGachaDraw() {
-        showSlotMachineAnimation { finalStars in
-            self.presentGachaImage(for: finalStars)
+        guard !isPerformingGacha else { return }
+
+        let rolledStars = pickStarLevelBasedOnProbability()
+        guard let reward = gachaGallery(starLevel: rolledStars) else { return }
+        let rewardStars = max(1, min(3, reward.stars ?? rolledStars))
+
+        isPerformingGacha = true
+
+        let animationView = makeGachaAnimationView(for: imageGallery.gachaAnimationStyle ?? .mysteryCard)
+        animationView.frame = view.bounds
+        animationView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(animationView)
+
+        if let url = URL(string: reward.url) {
+            getImageFromURL(url: url) { image in
+                animationView.setRewardImage(image)
+            }
+        }
+
+        showSlotMachineAnimation(animationView, finalStars: rewardStars) { [weak self] in
+            self?.presentGachaImage(reward, resolvedStars: rewardStars)
         }
     }
     
-    private func presentGachaImage(for starLevel: Int) {
-        guard let imageGalleryContent = gachaGallery(starLevel: starLevel) else { return }
-        
+    private func presentGachaImage(_ imageGalleryContent: ImageGalleryModel.galleryContent, resolvedStars: Int) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let imageVC = storyboard.instantiateViewController(withIdentifier: "ImageViewController") as? ImageViewController {
             if let url = URL(string: imageGalleryContent.url) {
                 imageVC.imageURL = url
             }
             imageVC.imageTitle = imageGalleryContent.imageTitle
-            imageVC.stars = imageGalleryContent.stars
+            imageVC.stars = resolvedStars
             imageVC.favorite = imageGalleryContent.favorite
             
             navigationController?.pushViewController(imageVC, animated: true)
@@ -718,24 +795,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
     
     
-    private func showSlotMachineAnimation(completion: @escaping (Int) -> Void) {
-        let slotMachineView = SlotMachineView(frame: view.bounds)
-        slotMachineView.alpha = 0.0
-        view.addSubview(slotMachineView)
-        
-        UIView.animate(withDuration: 0.2, animations: {
-            slotMachineView.alpha = 1.0
-        }) { _ in
-            let finalStars = self.pickStarLevelBasedOnProbability()
-            
-            slotMachineView.startAnimation(finalStars: finalStars) {
-                UIView.animate(withDuration: 0.2, animations: {
-                    slotMachineView.alpha = 0.0
-                }) { _ in
-                    slotMachineView.removeFromSuperview()
-                    completion(finalStars)
-                }
-            }
+    private func showSlotMachineAnimation(_ animationView: (UIView & GachaAnimationView), finalStars: Int, completion: @escaping () -> Void) {
+        animationView.startAnimation(finalStars: finalStars) { [weak self, weak animationView] in
+            animationView?.removeFromSuperview()
+            self?.isPerformingGacha = false
+            completion()
         }
     }
     
@@ -763,7 +827,36 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     }
 
     
-    func doSomethingWith(pwSwitch: Bool, pw: String, isEN: Bool, isPWEN: Bool, star1Probability: Float, star2Probability: Float, star3Probability: Float) {
+    private func makeGachaAnimationView(for style: ImageGalleryModel.GachaAnimationStyle) -> (UIView & GachaAnimationView) {
+        let effectiveStyle: ImageGalleryModel.GachaAnimationStyle
+        if PremiumAnimationsStore.shared.isStyleUnlocked(style) {
+            effectiveStyle = style
+        } else {
+            effectiveStyle = .mysteryCard
+        }
+
+        switch effectiveStyle {
+        case .mysteryCard:
+            return SlotMachineView(frame: view.bounds)
+        case .spinningStar:
+            return SpinningStarAnimationView(frame: view.bounds)
+        case .airport:
+            return AirportBoardAnimationView(frame: view.bounds)
+        case .slotMachine:
+            return SlotReelAnimationView(frame: view.bounds)
+        }
+    }
+
+    func doSomethingWith(
+        pwSwitch: Bool,
+        pw: String,
+        isEN: Bool,
+        isPWEN: Bool,
+        star1Probability: Float,
+        star2Probability: Float,
+        star3Probability: Float,
+        gachaAnimationStyle: ImageGalleryModel.GachaAnimationStyle
+    ) {
         if pwSwitch {
             imageGallery.galleryPW = pw
         }
@@ -775,12 +868,21 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         imageGallery.starProbabilityValues?.star1 = star1Probability
         imageGallery.starProbabilityValues?.star2 = star2Probability
         imageGallery.starProbabilityValues?.star3 = star3Probability
+        imageGallery.gachaAnimationStyle = gachaAnimationStyle
         save()
     }
     
     // Add new collection view cell and paste image in PasteBoard
     @IBAction func addPaste(_ sender: Any) {
+        if pasteBulkGalleryContents(at: 0) {
+            return
+        }
         pasteLink()
+    }
+
+    @objc private func triggerPullToRoll() {
+        collectionView.refreshControl?.endRefreshing()
+        initiateGachaDraw()
     }
     
     /*
@@ -888,15 +990,129 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         present(alert, animated: true)
     }
     
+    @IBAction func showHelp(_ sender: Any) {
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        guard let helpVC = storyBoard.instantiateViewController(withIdentifier: "helpScreen") as? HelpViewController else { return }
+
+        helpVC.modalPresentationStyle = .fullScreen
+        present(helpVC, animated: true)
+    }
+
     @IBAction func undoImageAdd(_ sender: Any) {
-        if imageGallery.galleryContents.count > 0 {
-            //let showIndex = showOrder[0]
-            imageGallery.galleryContents.remove(at: 0)
-            //showOrder = imageGallery.determineShowOrder()
-            collectionView.deleteItems(at: [IndexPath(row: 0, section: 0)])
-            //save()
-            refreshImageCells()
+        guard imageGallery.galleryContents.count > 0 else { return }
+
+        let alert = UIAlertController(
+            title: "Delete Image",
+            message: "Are you sure you want to delete the top image?",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            guard let self = self else { return }
+
+            self.imageGallery.galleryContents.remove(at: 0)
+            self.collectionView.deleteItems(at: [IndexPath(row: 0, section: 0)])
+            self.refreshImageCells()
+        }))
+
+        present(alert, animated: true)
+    }
+
+    private func enterBulkSelectionMode(selecting indexPath: IndexPath? = nil) {
+        guard !isBulkSelectionMode else { return }
+
+        isBulkSelectionMode = true
+        normalNavigationTitle = navigationItem.title
+        normalRightBarButtonItems = navigationItem.rightBarButtonItems ?? []
+        collectionView?.allowsMultipleSelection = true
+
+        if let indexPath = indexPath {
+            collectionView?.selectItem(at: indexPath, animated: true, scrollPosition: [])
         }
+
+        updateBulkSelectionControls()
+    }
+
+    @objc private func cancelBulkSelection() {
+        exitBulkSelectionMode()
+    }
+
+    private func exitBulkSelectionMode() {
+        isBulkSelectionMode = false
+        collectionView?.allowsMultipleSelection = false
+
+        collectionView?.indexPathsForSelectedItems?.forEach {
+            collectionView?.deselectItem(at: $0, animated: false)
+        }
+
+        navigationItem.title = normalNavigationTitle
+        navigationItem.rightBarButtonItems = normalRightBarButtonItems
+    }
+
+    private func updateBulkSelectionControls() {
+        let selectedCount = collectionView?.indexPathsForSelectedItems?.count ?? 0
+        navigationItem.title = selectedCount == 0 ? "Select Images" : "\(selectedCount) Selected"
+
+        let copyButton = UIBarButtonItem(
+            image: UIImage(systemName: "doc.on.doc"),
+            style: .plain,
+            target: self,
+            action: #selector(copySelectedImages)
+        )
+        copyButton.isEnabled = selectedCount > 0
+
+        let cancelButton = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(cancelBulkSelection)
+        )
+
+        navigationItem.rightBarButtonItems = [cancelButton, copyButton]
+    }
+
+    @objc private func copySelectedImages() {
+        guard
+            let selectedIndexPaths = collectionView?.indexPathsForSelectedItems,
+            !selectedIndexPaths.isEmpty
+        else {
+            return
+        }
+
+        let sortedIndexPaths = selectedIndexPaths.sorted { $0.item < $1.item }
+        let selectedItems = sortedIndexPaths.map { imageGallery.galleryContents[$0.item] }
+        let payload = BulkClipboardPayload(items: selectedItems)
+
+        guard let payloadData = try? JSONEncoder().encode(payload) else { return }
+
+        UIPasteboard.general.setData(payloadData, forPasteboardType: bulkGalleryPasteboardType)
+        exitBulkSelectionMode()
+    }
+
+    private func pasteBulkGalleryContents(at insertionIndex: Int) -> Bool {
+        guard let payloadData = UIPasteboard.general.data(forPasteboardType: bulkGalleryPasteboardType) else {
+            return false
+        }
+
+        guard let payload = try? JSONDecoder().decode(BulkClipboardPayload.self, from: payloadData), !payload.items.isEmpty else {
+            return false
+        }
+
+        let clampedInsertionIndex = max(0, min(insertionIndex, imageGallery.galleryContents.count))
+        var insertedIndexPaths: [IndexPath] = []
+
+        for (offset, item) in payload.items.enumerated() {
+            let targetIndex = clampedInsertionIndex + offset
+            imageGallery.galleryContents.insert(item, at: targetIndex)
+            insertedIndexPaths.append(IndexPath(row: targetIndex, section: 0))
+        }
+
+        collectionView?.performBatchUpdates({
+            collectionView?.insertItems(at: insertedIndexPaths)
+        })
+        save()
+        refreshImageCells()
+        return true
     }
 
     
@@ -907,5 +1123,3 @@ extension Notification.Name {
     static let deletedImage = Notification.Name("deletedImage")
     static let updatedImageDetails = Notification.Name("updatedImageDetails")
 }
-
-

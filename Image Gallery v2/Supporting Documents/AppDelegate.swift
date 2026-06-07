@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
     func passwordResult(showImages: Bool, showEnterPassword: Bool) {
         if showImages {
             if let lastVC = lastActiveViewController {
-                window?.rootViewController?.present(lastVC, animated: true, completion: nil)
+                activeWindow?.rootViewController?.present(lastVC, animated: true, completion: nil)
             }
         }
         else {
@@ -23,8 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
     }
     
     
-
-    var window: UIWindow?
     var documentPassword: String?
     var isPasteLinkActive = false
     var lastActiveViewController: UIViewController?
@@ -39,33 +37,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
         
         // Set up global navigation bar appearance
         configureNavigationBarAppearance()
+        PremiumAnimationsStore.shared.start()
         
         return true
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-        if !isPasteLinkActive {
-            lastActiveViewController = window?.rootViewController?.presentedViewController
-            if isPasswordProtected {
-                window?.rootViewController?.presentedViewController?.dismiss(animated: false)
-            }
-        }
+        handleWillResignActive()
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        showBlankScreenWindow()
+        handleDidEnterBackground()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-        if isPasswordProtected {
-            showPasswordScreen()
-        }
-        hideBlankScreen()
+        handleWillEnterForeground()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -75,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
     
     private func showPasswordScreen() {
         print("Attempting to show password screen")
-        guard let window = window else {
+        guard let window = activeWindow else {
             print("Window is not available")
             return
         }
@@ -112,13 +98,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let configuration = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        configuration.delegateClass = SceneDelegate.self
+        configuration.storyboard = nil
+        return configuration
+    }
 
     func application(_ app: UIApplication, open inputURL: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         // Ensure the URL is a file URL
         guard inputURL.isFileURL else { return false }
                 
         // Reveal / import the document at the URL
-        guard let documentBrowserViewController = window?.rootViewController as? DocumentBrowserViewController else { return false }
+        guard let documentBrowserViewController = activeWindow?.rootViewController as? DocumentBrowserViewController else { return false }
 
         documentBrowserViewController.revealDocument(at: inputURL, importIfNeeded: true) { (revealedDocumentURL, error) in
             if let error = error {
@@ -138,7 +131,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
     
     private func showBlankScreenWindow(){
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        blankScreenWindow = UIWindow(frame: UIScreen.main.bounds)
+        if let windowScene = activeWindow?.windowScene {
+            blankScreenWindow = UIWindow(windowScene: windowScene)
+            blankScreenWindow?.frame = windowScene.coordinateSpace.bounds
+        } else {
+            blankScreenWindow = UIWindow(frame: UIScreen.main.bounds)
+        }
         blankScreenWindow?.rootViewController = storyBoard.instantiateViewController(withIdentifier: "blankScreen")
         blankScreenWindow?.windowLevel = .alert + 1
         blankScreenWindow?.makeKeyAndVisible()
@@ -156,7 +154,56 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EnterPasswordViewContolle
         // Optional: If you want to change the large title color as well
         UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)]
     }
+    
+    var activeWindow: UIWindow? {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        return scenes.lazy.flatMap(\.windows).first(where: \.isKeyWindow) ?? scenes.lazy.flatMap(\.windows).first
+    }
+    
+    func handleWillResignActive() {
+        if !isPasteLinkActive {
+            lastActiveViewController = activeWindow?.rootViewController?.presentedViewController
+            if isPasswordProtected {
+                activeWindow?.rootViewController?.presentedViewController?.dismiss(animated: false)
+            }
+        }
+    }
+    
+    func handleDidEnterBackground() {
+        showBlankScreenWindow()
+    }
+    
+    func handleWillEnterForeground() {
+        if isPasswordProtected {
+            showPasswordScreen()
+        }
+        hideBlankScreen()
+    }
 
 
 }
 
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+    
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = storyboard.instantiateInitialViewController()
+        self.window = window
+        window.makeKeyAndVisible()
+    }
+    
+    func sceneWillResignActive(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.handleWillResignActive()
+    }
+    
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.handleDidEnterBackground()
+    }
+    
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.handleWillEnterForeground()
+    }
+}

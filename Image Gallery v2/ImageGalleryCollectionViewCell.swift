@@ -14,6 +14,18 @@ class ImageGalleryCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var imageCellSpinner: UIActivityIndicatorView!
+
+    override var isSelected: Bool {
+        didSet {
+            updateSelectionAppearance()
+        }
+    }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        layer.borderWidth = 0
+        layer.borderColor = UIColor.clear.cgColor
+    }
     
     override func draw(_ rect: CGRect) {
         
@@ -45,6 +57,11 @@ class ImageGalleryCollectionViewCell: UICollectionViewCell {
             }
             */
         }
+    }
+
+    private func updateSelectionAppearance() {
+        layer.borderWidth = isSelected ? 4 : 0
+        layer.borderColor = UIColor.systemTeal.cgColor
     }
     
 }
