@@ -108,9 +108,11 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
         // Configure the cell
         if let imageGallery = imageGallery{
             if let imageCell = cell as? ImageGalleryCollectionViewCell {
-                if let url = URL(string: imageGallery.galleryContents[indexPath.item].url) {
+                let galleryContent = imageGallery.galleryContents[indexPath.item]
+                if let url = URL(string: galleryContent.url) {
                     imageCell.backgroundImageUrl = url
                 }
+                imageCell.isFavorited = galleryContent.favorite ?? false
             }
         }
     
@@ -120,6 +122,10 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
             let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { action in
+                guard let galleryContent = self.imageGallery?.galleryContents[indexPath.row] else {
+                    return UIMenu(title: "", children: [])
+                }
+                let isFavorited = galleryContent.favorite ?? false
                 
                 let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil) { action in
                     self.showDeleteConfirmationAlert(forItemAt: indexPath)
@@ -133,11 +139,11 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
                 }
                 
                 let unfavorite = UIAction(title: "Unfavorite", image: UIImage(systemName: "heart.slash.fill"), identifier: nil) { action in
-                            self.unfavoriteImage(at: indexPath)
+                    self.unfavoriteImage(at: indexPath)
                 }
                 
                 let favorite = UIAction(title: "Favorite", image: UIImage(systemName: "heart.fill"), identifier: nil) { action in
-                            self.favoriteImage(at: indexPath)
+                    self.favoriteImage(at: indexPath)
                 }
 
                 let selectMultiple = UIAction(title: "Select Multiple", image: UIImage(systemName: "checklist"), identifier: nil) { action in
@@ -145,7 +151,12 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
                 }
                 
                 
-                return UIMenu(title: "", image: nil, identifier: nil, children: [unfavorite, delete, copyURL, favorite, selectMultiple])
+                var actions = [delete]
+                actions.append(isFavorited ? unfavorite : favorite)
+                actions.append(copyURL)
+                actions.append(selectMultiple)
+
+                return UIMenu(title: "", image: nil, identifier: nil, children: actions)
             }
             return configuration
         }
@@ -153,24 +164,26 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
     private func unfavoriteImage(at indexPath: IndexPath) {
         guard let imageGallery = self.imageGallery else { return }
         let imageContent = imageGallery.galleryContents[indexPath.row]
-        
-        // Update the image content and notify
         NotificationCenter.default.post(name: .updatedImageDetails, object: nil, userInfo: ["imageURL": imageContent.url, "favorite": false])
-        
-        // Remove the item from the collection view
-        collectionView.performBatchUpdates({
-            self.imageGallery?.galleryContents.remove(at: indexPath.row)
-            collectionView.deleteItems(at: [indexPath])
-        }, completion: nil)
+
+        if showingFavorites {
+            collectionView.performBatchUpdates({
+                self.imageGallery?.galleryContents.remove(at: indexPath.row)
+                collectionView.deleteItems(at: [indexPath])
+            })
+        } else {
+            self.imageGallery?.updateGalleryContent(byURL: imageContent.url, newTitle: nil, newStars: nil, newFavorite: false)
+            refreshImageCells()
+        }
     }
     
     private func favoriteImage(at indexPath: IndexPath) {
         guard let imageGallery = self.imageGallery else { return }
         let imageContent = imageGallery.galleryContents[indexPath.row]
         
-        // Update the image content and notify
         NotificationCenter.default.post(name: .updatedImageDetails, object: nil, userInfo: ["imageURL": imageContent.url, "favorite": true])
-        
+        self.imageGallery?.updateGalleryContent(byURL: imageContent.url, newTitle: nil, newStars: nil, newFavorite: true)
+        refreshImageCells()
     }
     
     private func showDeleteConfirmationAlert(forItemAt indexPath: IndexPath) {
@@ -310,13 +323,22 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
         )
         copyButton.isEnabled = selectedCount > 0
 
+        let actionsButton = UIBarButtonItem(
+            title: "Actions",
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        actionsButton.isEnabled = selectedCount > 0
+        actionsButton.menu = makeBulkActionsMenu()
+
         let cancelButton = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
             action: #selector(cancelBulkSelection)
         )
 
-        navigationItem.rightBarButtonItems = [cancelButton, copyButton]
+        navigationItem.rightBarButtonItems = [cancelButton, actionsButton, copyButton]
     }
 
     @objc private func copySelectedImages() {
@@ -337,6 +359,86 @@ class FilteredImageGalleryCollectionViewController: UICollectionViewController, 
 
         UIPasteboard.general.setData(payloadData, forPasteboardType: bulkGalleryPasteboardType)
         exitBulkSelectionMode()
+    }
+
+    private func makeBulkActionsMenu() -> UIMenu {
+        let favorite = UIAction(title: "Favorite", image: UIImage(systemName: "heart.fill")) { [weak self] _ in
+            self?.applyBulkFavoriteState(true)
+        }
+
+        let unfavorite = UIAction(title: "Unfavorite", image: UIImage(systemName: "heart.slash.fill")) { [weak self] _ in
+            self?.applyBulkFavoriteState(false)
+        }
+
+        let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), attributes: .destructive) { [weak self] _ in
+            self?.confirmBulkDelete()
+        }
+
+        return UIMenu(title: "", children: [favorite, unfavorite, delete])
+    }
+
+    private func selectedIndexPathsSorted() -> [IndexPath] {
+        (collectionView?.indexPathsForSelectedItems ?? []).sorted { $0.item < $1.item }
+    }
+
+    private func applyBulkFavoriteState(_ isFavorite: Bool) {
+        let selectedIndexPaths = selectedIndexPathsSorted()
+        guard !selectedIndexPaths.isEmpty, let imageGallery = imageGallery else { return }
+
+        let urls = selectedIndexPaths.compactMap { indexPath -> String? in
+            guard imageGallery.galleryContents.indices.contains(indexPath.item) else { return nil }
+            return imageGallery.galleryContents[indexPath.item].url
+        }
+
+        urls.forEach {
+            NotificationCenter.default.post(name: .updatedImageDetails, object: nil, userInfo: ["imageURL": $0, "favorite": isFavorite])
+            self.imageGallery?.updateGalleryContent(byURL: $0, newTitle: nil, newStars: nil, newFavorite: isFavorite)
+        }
+
+        if !isFavorite && showingFavorites {
+            deleteSelectedVisibleItems(selectedIndexPaths, notifySourceGallery: false)
+        } else {
+            refreshImageCells()
+            exitBulkSelectionMode()
+        }
+    }
+
+    private func confirmBulkDelete() {
+        let selectedIndexPaths = selectedIndexPathsSorted()
+        guard !selectedIndexPaths.isEmpty else { return }
+
+        let count = selectedIndexPaths.count
+        let alert = UIAlertController(
+            title: "Delete Images",
+            message: count == 1 ? "Are you sure you want to delete this image?" : "Are you sure you want to delete these \(count) images?",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            self?.deleteSelectedVisibleItems(selectedIndexPaths, notifySourceGallery: true)
+        }))
+
+        present(alert, animated: true)
+    }
+
+    private func deleteSelectedVisibleItems(_ indexPaths: [IndexPath], notifySourceGallery: Bool) {
+        let sortedDescending = indexPaths.sorted { $0.item > $1.item }
+
+        for indexPath in sortedDescending {
+            guard let imageContent = imageGallery?.galleryContents[indexPath.item] else { continue }
+            if notifySourceGallery {
+                NotificationCenter.default.post(name: .deletedImage, object: nil, userInfo: ["deletedURL": imageContent.url])
+            }
+            imageGallery?.galleryContents.remove(at: indexPath.item)
+        }
+
+        collectionView.performBatchUpdates({
+            collectionView.deleteItems(at: sortedDescending)
+        })
+
+        exitBulkSelectionMode()
+        refreshImageCells()
     }
 
     /*

@@ -92,9 +92,11 @@ class RandomImageGalleryCollectionViewController: UICollectionViewController, UI
         if let imageGallery = imageGallery, let showOrder = showOrder {
             let showOrderCell = showOrder[indexPath.item]
             if let imageCell = cell as? ImageGalleryCollectionViewCell {
-                if let url = URL(string: imageGallery.galleryContents[showOrderCell].url) {
+                let galleryContent = imageGallery.galleryContents[showOrderCell]
+                if let url = URL(string: galleryContent.url) {
                     imageCell.backgroundImageUrl = url
                 }
+                imageCell.isFavorited = galleryContent.favorite ?? false
             }
         }
     

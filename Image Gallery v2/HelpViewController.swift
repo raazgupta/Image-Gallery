@@ -43,7 +43,6 @@ class HelpViewController: UIViewController {
 
         appendHeading("Saving Images", to: text)
         appendBullet(icon: "arrow.down.doc.fill", text: "Open a gallery, copy an image link in your browser, then tap the download button to add it.", to: text)
-        appendBullet(text: "You can also tap and hold on an empty area inside the gallery and choose Paste.", to: text)
         appendBody("\n", to: text)
 
         appendHeading("Gallery Controls", to: text)
@@ -55,6 +54,15 @@ class HelpViewController: UIViewController {
         appendBullet(icon: "square.stack.fill", text: "Random Image: show your gallery images in a shuffled random order.", to: text)
         appendBullet(icon: "trash", text: "Delete Image: remove the top image after confirming the deletion.", to: text)
         appendBullet(icon: "questionmark.circle", text: "Help: reopen this guide at any time.", to: text)
+        appendBody("\n", to: text)
+
+        appendHeading("Touch And Hold", to: text)
+        appendBullet(icon: "square.and.arrow.up.fill", text: "Copy: copy the selected image link.", to: text)
+        appendBullet(icon: "heart.fill", text: "Favorite: mark an image as a favorite so it stands out in the gallery.", to: text)
+        appendBullet(icon: "heart.slash.fill", text: "Unfavorite: remove the favorite mark from an image that is already favorited.", to: text)
+        appendBullet(icon: "arrow.down.document.fill", text: "Paste: in the main gallery, insert the current copied image or copied multi-image payload below the pressed image.", to: text)
+        appendBullet(icon: "checklist", text: "Select Multiple: choose several images at once so you can copy, delete, favorite, or unfavorite them together.", to: text)
+        appendBullet(icon: "trash.fill", text: "Delete: remove the selected image after confirming the action.", to: text)
         appendBody("\n", to: text)
 
         appendHeading("Random Roll Animations", to: text)

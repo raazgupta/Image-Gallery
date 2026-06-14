@@ -482,9 +482,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         
         // Configure the cell
         if let imageCell = cell as? ImageGalleryCollectionViewCell {
-            if let url = URL(string: imageGallery.galleryContents[indexPath.item].url) {
+            let galleryContent = imageGallery.galleryContents[indexPath.item]
+            if let url = URL(string: galleryContent.url) {
                 imageCell.backgroundImageUrl = url
             }
+            imageCell.isFavorited = galleryContent.favorite ?? false
         }
         
         return cell
@@ -492,6 +494,8 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
     
     override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil){ action in
+            let galleryContent = self.imageGallery.galleryContents[indexPath.row]
+            let isFavorited = galleryContent.favorite ?? false
             
             // Press image to delete
             let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), identifier: nil, handler: {action in
@@ -510,10 +514,11 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
             
             // Prss image to favorite
             let favoriteImage = UIAction(title: "Favorite", image: UIImage(systemName: "heart.fill"), identifier: nil, handler: { action in
-                if self.imageGallery.galleryContents.count > 0 {
-                    let imageURL = self.imageGallery.galleryContents[indexPath.row].url
-                    self.imageGallery.updateGalleryContent(byURL: imageURL, newTitle: nil, newStars: nil, newFavorite: true)
-                }
+                self.setFavoriteState(true, for: [indexPath])
+            })
+
+            let unfavoriteImage = UIAction(title: "Unfavorite", image: UIImage(systemName: "heart.slash.fill"), identifier: nil, handler: { action in
+                self.setFavoriteState(false, for: [indexPath])
             })
             
             let pasteImage = UIAction(title: "Paste", image: UIImage(systemName: "arrow.down.document.fill"), identifier: nil, handler: { action in
@@ -524,7 +529,13 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
                 self.enterBulkSelectionMode(selecting: indexPath)
             })
             
-            return UIMenu(title: "", image: nil, identifier: nil, children: [delete, favoriteImage, copyURL, pasteImage, selectMultiple])
+            var actions = [delete]
+            actions.append(isFavorited ? unfavoriteImage : favoriteImage)
+            actions.append(copyURL)
+            actions.append(pasteImage)
+            actions.append(selectMultiple)
+
+            return UIMenu(title: "", image: nil, identifier: nil, children: actions)
         }
         return configuration
     }
@@ -1062,13 +1073,22 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
         )
         copyButton.isEnabled = selectedCount > 0
 
+        let actionsButton = UIBarButtonItem(
+            title: "Actions",
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        actionsButton.isEnabled = selectedCount > 0
+        actionsButton.menu = makeBulkActionsMenu()
+
         let cancelButton = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
             action: #selector(cancelBulkSelection)
         )
 
-        navigationItem.rightBarButtonItems = [cancelButton, copyButton]
+        navigationItem.rightBarButtonItems = [cancelButton, actionsButton, copyButton]
     }
 
     @objc private func copySelectedImages() {
@@ -1087,6 +1107,79 @@ class ImageGalleryCollectionViewController: UICollectionViewController, UICollec
 
         UIPasteboard.general.setData(payloadData, forPasteboardType: bulkGalleryPasteboardType)
         exitBulkSelectionMode()
+    }
+
+    private func makeBulkActionsMenu() -> UIMenu {
+        let favorite = UIAction(title: "Favorite", image: UIImage(systemName: "heart.fill")) { [weak self] _ in
+            self?.applyBulkFavoriteState(true)
+        }
+
+        let unfavorite = UIAction(title: "Unfavorite", image: UIImage(systemName: "heart.slash.fill")) { [weak self] _ in
+            self?.applyBulkFavoriteState(false)
+        }
+
+        let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill"), attributes: .destructive) { [weak self] _ in
+            self?.confirmBulkDelete()
+        }
+
+        return UIMenu(title: "", children: [favorite, unfavorite, delete])
+    }
+
+    private func selectedIndexPathsSorted() -> [IndexPath] {
+        (collectionView?.indexPathsForSelectedItems ?? []).sorted { $0.item < $1.item }
+    }
+
+    private func setFavoriteState(_ isFavorite: Bool, for indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            guard imageGallery.galleryContents.indices.contains(indexPath.item) else { continue }
+            let imageURL = imageGallery.galleryContents[indexPath.item].url
+            imageGallery.updateGalleryContent(byURL: imageURL, newTitle: nil, newStars: nil, newFavorite: isFavorite)
+        }
+        save()
+        refreshImageCells()
+    }
+
+    private func applyBulkFavoriteState(_ isFavorite: Bool) {
+        let selectedIndexPaths = selectedIndexPathsSorted()
+        guard !selectedIndexPaths.isEmpty else { return }
+
+        setFavoriteState(isFavorite, for: selectedIndexPaths)
+        exitBulkSelectionMode()
+    }
+
+    private func confirmBulkDelete() {
+        let selectedIndexPaths = selectedIndexPathsSorted()
+        guard !selectedIndexPaths.isEmpty else { return }
+
+        let count = selectedIndexPaths.count
+        let alert = UIAlertController(
+            title: "Delete Images",
+            message: count == 1 ? "Are you sure you want to delete this image?" : "Are you sure you want to delete these \(count) images?",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            self?.deleteSelectedImages(selectedIndexPaths)
+        }))
+
+        present(alert, animated: true)
+    }
+
+    private func deleteSelectedImages(_ indexPaths: [IndexPath]) {
+        let sortedDescending = indexPaths.sorted { $0.item > $1.item }
+
+        for indexPath in sortedDescending {
+            guard imageGallery.galleryContents.indices.contains(indexPath.item) else { continue }
+            imageGallery.galleryContents.remove(at: indexPath.item)
+        }
+
+        collectionView?.performBatchUpdates({
+            collectionView?.deleteItems(at: sortedDescending)
+        })
+        save()
+        exitBulkSelectionMode()
+        refreshImageCells()
     }
 
     private func pasteBulkGalleryContents(at insertionIndex: Int) -> Bool {

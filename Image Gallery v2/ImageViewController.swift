@@ -14,6 +14,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     var stars: Int?
     var favorite: Bool?
     private var hasAppliedInitialZoom = false
+    private var hasAppliedInitialContentOffset = false
 
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     
@@ -47,6 +48,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             imageView.sizeToFit()
             scrollView?.contentSize = imageView.frame.size
             hasAppliedInitialZoom = false
+            hasAppliedInitialContentOffset = false
             updateZoomScaleToFitIfNeeded()
             spinner?.stopAnimating()
         }
@@ -136,19 +138,34 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         scrollView.minimumZoomScale = min(fitScale, 1.0)
         scrollView.zoomScale = fitScale
         hasAppliedInitialZoom = true
+        updateInitialContentOffsetIfNeeded()
     }
 
     private func centerImageIfNeeded() {
         guard let scrollView = scrollView else { return }
 
         let horizontalInset = max((scrollView.bounds.width - imageView.frame.width) / 2, 0)
-        let topInset = view.safeAreaInsets.top
+        let verticalInset = max((scrollView.bounds.height - imageView.frame.height) / 2, 0)
         scrollView.contentInset = UIEdgeInsets(
-            top: topInset,
+            top: verticalInset,
             left: horizontalInset,
-            bottom: 0,
+            bottom: verticalInset,
             right: horizontalInset
         )
-        scrollView.contentOffset = CGPoint(x: -horizontalInset, y: -topInset)
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+    }
+
+    private func updateInitialContentOffsetIfNeeded() {
+        guard
+            !hasAppliedInitialContentOffset,
+            let scrollView = scrollView
+        else { return }
+
+        centerImageIfNeeded()
+
+        let minOffsetX = -scrollView.contentInset.left
+        let minOffsetY = -scrollView.contentInset.top
+        scrollView.contentOffset = CGPoint(x: minOffsetX, y: minOffsetY)
+        hasAppliedInitialContentOffset = true
     }
 }

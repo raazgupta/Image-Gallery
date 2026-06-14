@@ -11,20 +11,34 @@ import UIKit
 class ImageGalleryCollectionViewCell: UICollectionViewCell {
     
     var backgroundImageUrl: URL? { didSet { setNeedsDisplay() }}
+    var isFavorited: Bool = false {
+        didSet {
+            updateAppearance()
+        }
+    }
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var imageCellSpinner: UIActivityIndicatorView!
 
     override var isSelected: Bool {
         didSet {
-            updateSelectionAppearance()
+            updateAppearance()
         }
     }
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        layer.borderWidth = 0
-        layer.borderColor = UIColor.clear.cgColor
+        backgroundColor = .clear
+        layer.cornerRadius = 16
+        layer.masksToBounds = false
+        layer.shadowOffset = .zero
+        contentView.layer.cornerRadius = 16
+        contentView.layer.masksToBounds = true
+        contentView.backgroundColor = .secondarySystemBackground
+        imageView.layer.cornerRadius = 14
+        imageView.layer.masksToBounds = true
+        imageView.backgroundColor = .secondarySystemBackground
+        updateAppearance()
     }
     
     override func draw(_ rect: CGRect) {
@@ -59,9 +73,30 @@ class ImageGalleryCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    private func updateSelectionAppearance() {
-        layer.borderWidth = isSelected ? 4 : 0
-        layer.borderColor = UIColor.systemTeal.cgColor
+    private func updateAppearance() {
+        if isSelected {
+            layer.borderWidth = 4
+            layer.borderColor = UIColor.systemTeal.cgColor
+            layer.shadowColor = UIColor.systemTeal.withAlphaComponent(0.45).cgColor
+            layer.shadowOpacity = 1
+            layer.shadowRadius = 14
+            layer.shadowOffset = .zero
+            return
+        }
+
+        if isFavorited {
+            layer.borderWidth = 4
+            layer.borderColor = UIColor(red: 0.53, green: 0.32, blue: 0.93, alpha: 1).cgColor
+            layer.shadowColor = UIColor(red: 0.56, green: 0.36, blue: 0.96, alpha: 0.78).cgColor
+            layer.shadowOpacity = 1
+            layer.shadowRadius = 18
+            layer.shadowOffset = .zero
+            return
+        }
+
+        layer.borderWidth = 0
+        layer.borderColor = UIColor.clear.cgColor
+        layer.shadowOpacity = 0
     }
     
 }

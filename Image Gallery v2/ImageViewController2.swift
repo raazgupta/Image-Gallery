@@ -14,6 +14,8 @@ import UIKit
 class ImageViewController2: UIViewController, UIScrollViewDelegate {
 
     var document: ImageDocument?
+    private var hasAppliedInitialZoom = false
+    private var hasAppliedInitialContentOffset = false
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -59,6 +61,9 @@ class ImageViewController2: UIViewController, UIScrollViewDelegate {
             imageView.image = newValue
             imageView.sizeToFit()
             scrollView?.contentSize = imageView.frame.size
+            hasAppliedInitialZoom = false
+            hasAppliedInitialContentOffset = false
+            updateZoomScaleToFitIfNeeded()
             spinner?.stopAnimating()
         }
     }
@@ -74,6 +79,10 @@ class ImageViewController2: UIViewController, UIScrollViewDelegate {
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
+    }
+
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        centerImageIfNeeded()
     }
     
     /*
@@ -106,10 +115,58 @@ class ImageViewController2: UIViewController, UIScrollViewDelegate {
         view.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
         self.navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateZoomScaleToFitIfNeeded()
+        centerImageIfNeeded()
+    }
     
     @IBAction func close(_ sender: Any) {
         dismiss(animated: true)
     }
-    
-    
+
+    private func updateZoomScaleToFitIfNeeded() {
+        guard
+            !hasAppliedInitialZoom,
+            let scrollView = scrollView,
+            let image = imageView.image,
+            scrollView.bounds.width > 0,
+            scrollView.bounds.height > 0
+        else { return }
+
+        let widthScale = scrollView.bounds.width / image.size.width
+        let heightScale = scrollView.bounds.height / image.size.height
+        let fitScale = min(widthScale, heightScale)
+
+        scrollView.minimumZoomScale = min(fitScale, 1.0)
+        scrollView.zoomScale = fitScale
+        hasAppliedInitialZoom = true
+        updateInitialContentOffsetIfNeeded()
+    }
+
+    private func centerImageIfNeeded() {
+        guard let scrollView = scrollView else { return }
+
+        let horizontalInset = max((scrollView.bounds.width - imageView.frame.width) / 2, 0)
+        let verticalInset = max((scrollView.bounds.height - imageView.frame.height) / 2, 0)
+        scrollView.contentInset = UIEdgeInsets(
+            top: verticalInset,
+            left: horizontalInset,
+            bottom: verticalInset,
+            right: horizontalInset
+        )
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+    }
+
+    private func updateInitialContentOffsetIfNeeded() {
+        guard
+            !hasAppliedInitialContentOffset,
+            let scrollView = scrollView
+        else { return }
+
+        centerImageIfNeeded()
+        scrollView.contentOffset = CGPoint(x: -scrollView.contentInset.left, y: -scrollView.contentInset.top)
+        hasAppliedInitialContentOffset = true
+    }
 }

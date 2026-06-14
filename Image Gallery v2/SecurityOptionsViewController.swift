@@ -22,13 +22,27 @@ protocol SecurityOptionsViewControllerDelegate: NSObjectProtocol {
     )
 }
 
-class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
+class SecurityOptionsViewController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate {
     private let premiumStore = PremiumAnimationsStore.shared
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ImageKeeper", category: "SecurityOptions")
     private var premiumUnlocked = false
     private var statusResetTask: DispatchWorkItem?
     private var purchaseInFlight = false
     private var purchaseRoundTrippedThroughAppStore = false
+    private weak var activeTextField: UITextField?
+
+    private let formScrollView = UIScrollView()
+    private let formStackView = UIStackView()
+    private let heroTitleLabel = UILabel()
+    private let heroSubtitleLabel = UILabel()
+    private let passwordSection = UIView()
+    private let probabilitySection = UIView()
+    private let animationSection = UIView()
+    private let securitySection = UIView()
+    private let passwordFieldContainer = UIView()
+    private let passwordFieldStack = UIStackView()
+    private let probabilityFieldsStack = UIStackView()
+    private let animationStatusStack = UIStackView()
 
     private func debugPrint(_ message: String) {
         print("[SecurityOptions] \(message)")
@@ -48,26 +62,28 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
     var galleryEN: Bool = false
     var galleryPWEN: Bool = false
     var gachaAnimationStyle: ImageGalleryModel.GachaAnimationStyle = .mysteryCard
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        applyButton.layer.cornerRadius = 10.0
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
         passwordText.delegate = self
         star1Text.delegate = self
         star2Text.delegate = self
         star3Text.delegate = self
+        passwordText.autocapitalizationType = .none
+        passwordText.autocorrectionType = .no
+        passwordText.isSecureTextEntry = true
+        star1Text.keyboardType = .decimalPad
+        star2Text.keyboardType = .decimalPad
+        star3Text.keyboardType = .decimalPad
         
         star1Text.text = String(star1Probability)
         star2Text.text = String(star2Probability)
         star3Text.text = String(star3Probability)
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard(_:)))
+        tapGesture.cancelsTouchesInView = false
+        tapGesture.delegate = self
         self.view.addGestureRecognizer(tapGesture)
         
         encryptFile.isOn = galleryEN
@@ -99,7 +115,12 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
 
         premiumStatusLabel.text = nil
         premiumStatusLabel.isHidden = true
+        configureSettingsFormLayout()
         configureAnimationButton()
+        updatePasswordVisibility(animated: false)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
     }
 
@@ -109,6 +130,13 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
     
     @objc func dismissKeyboard(_ sender: UITapGestureRecognizer) {
         self.view.endEditing(true)
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UIControl {
+            return false
+        }
+        return true
     }
     
     @IBOutlet weak var passwordText: UITextField!
@@ -124,12 +152,7 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var premiumStatusLabel: UILabel!
     
     @IBAction func setPassword(_ sender: UISwitch) {
-        if sender.isOn {
-            passwordText.isHidden = false
-        }
-        else {
-            passwordText.isHidden = true
-        }
+        updatePasswordVisibility(animated: true)
     }
 
     private func configureAnimationButton() {
@@ -318,6 +341,326 @@ class SecurityOptionsViewController: UIViewController, UITextFieldDelegate {
         statusResetTask = nil
         premiumStatusLabel.text = nil
         premiumStatusLabel.isHidden = true
+    }
+
+    private func configureSettingsFormLayout() {
+        let preservedControls = [
+            passwordText,
+            encryptFile,
+            encryptPassword,
+            applyButton,
+            setPassword,
+            star1Text,
+            star2Text,
+            star3Text,
+            gachaAnimationButton,
+            premiumStatusLabel
+        ].compactMap { $0 }
+        let preservedIds = Set(preservedControls.map { ObjectIdentifier($0) })
+
+        for subview in view.subviews where !preservedIds.contains(ObjectIdentifier(subview)) {
+            subview.isHidden = true
+        }
+
+        preservedControls.forEach {
+            $0.removeFromSuperview()
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+
+        view.backgroundColor = .black
+        navigationItem.title = nil
+
+        formScrollView.translatesAutoresizingMaskIntoConstraints = false
+        formScrollView.alwaysBounceVertical = true
+        formScrollView.keyboardDismissMode = .interactive
+
+        formStackView.translatesAutoresizingMaskIntoConstraints = false
+        formStackView.axis = .vertical
+        formStackView.spacing = 18
+        formStackView.alignment = .fill
+        formStackView.isLayoutMarginsRelativeArrangement = true
+        formStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 28, leading: 20, bottom: 28, trailing: 20)
+
+        heroTitleLabel.text = "Settings"
+        heroTitleLabel.textAlignment = .center
+        heroTitleLabel.font = UIFont.systemFont(ofSize: 26, weight: .semibold)
+        heroTitleLabel.textColor = UIColor(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
+
+        heroSubtitleLabel.text = "Control security, random-roll probabilities, and premium animation style."
+        heroSubtitleLabel.textAlignment = .center
+        heroSubtitleLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        heroSubtitleLabel.textColor = UIColor(white: 0.82, alpha: 1.0)
+        heroSubtitleLabel.numberOfLines = 0
+
+        passwordText.borderStyle = .roundedRect
+        star1Text.borderStyle = .roundedRect
+        star2Text.borderStyle = .roundedRect
+        star3Text.borderStyle = .roundedRect
+
+        view.addSubview(formScrollView)
+        formScrollView.addSubview(formStackView)
+
+        NSLayoutConstraint.activate([
+            formScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            formScrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            formScrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            formScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            formStackView.topAnchor.constraint(equalTo: formScrollView.contentLayoutGuide.topAnchor),
+            formStackView.leadingAnchor.constraint(equalTo: formScrollView.contentLayoutGuide.leadingAnchor),
+            formStackView.trailingAnchor.constraint(equalTo: formScrollView.contentLayoutGuide.trailingAnchor),
+            formStackView.bottomAnchor.constraint(equalTo: formScrollView.contentLayoutGuide.bottomAnchor),
+            formStackView.widthAnchor.constraint(equalTo: formScrollView.frameLayoutGuide.widthAnchor)
+        ])
+
+        configurePasswordSection()
+        configureSecuritySection()
+        configureProbabilitySection()
+        configureAnimationSection()
+
+        applyButton.configuration = .filled()
+        applyButton.configuration?.title = "Apply Settings"
+        applyButton.configuration?.cornerStyle = .large
+        applyButton.configuration?.baseBackgroundColor = UIColor(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
+        applyButton.configuration?.baseForegroundColor = .black
+        applyButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        NSLayoutConstraint.activate([
+            applyButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
+        ])
+
+        [heroTitleLabel, heroSubtitleLabel, passwordSection, securitySection, probabilitySection, animationSection, applyButton].forEach {
+            formStackView.addArrangedSubview($0)
+        }
+    }
+
+    private func configurePasswordSection() {
+        let passwordToggleRow = makeToggleRow(
+            title: "Set Password",
+            subtitle: "Protect the gallery with a password before opening it.",
+            toggle: setPassword
+        )
+
+        let passwordFieldLabel = makeSectionLabel("Password")
+        passwordFieldStack.axis = .vertical
+        passwordFieldStack.spacing = 10
+        passwordFieldStack.alignment = .fill
+        passwordFieldStack.translatesAutoresizingMaskIntoConstraints = false
+        passwordFieldStack.addArrangedSubview(passwordFieldLabel)
+        passwordFieldStack.addArrangedSubview(passwordText)
+
+        passwordFieldContainer.translatesAutoresizingMaskIntoConstraints = false
+        passwordFieldContainer.addSubview(passwordFieldStack)
+        NSLayoutConstraint.activate([
+            passwordFieldStack.topAnchor.constraint(equalTo: passwordFieldContainer.topAnchor),
+            passwordFieldStack.leadingAnchor.constraint(equalTo: passwordFieldContainer.leadingAnchor),
+            passwordFieldStack.trailingAnchor.constraint(equalTo: passwordFieldContainer.trailingAnchor),
+            passwordFieldStack.bottomAnchor.constraint(equalTo: passwordFieldContainer.bottomAnchor)
+        ])
+
+        let passwordStack = UIStackView(arrangedSubviews: [passwordToggleRow, passwordFieldContainer])
+        passwordStack.axis = .vertical
+        passwordStack.spacing = 14
+        passwordStack.alignment = .fill
+
+        configureSection(passwordSection, title: "Access", content: passwordStack)
+    }
+
+    private func configureSecuritySection() {
+        let encryptFileRow = makeToggleRow(
+            title: "Encrypt File",
+            subtitle: "Encrypt gallery data on disk when a password is set.",
+            toggle: encryptFile
+        )
+        let encryptPasswordRow = makeToggleRow(
+            title: "Encrypt Password",
+            subtitle: "Encrypt the stored password and require file encryption too.",
+            toggle: encryptPassword
+        )
+
+        let stack = UIStackView(arrangedSubviews: [encryptFileRow, encryptPasswordRow])
+        stack.axis = .vertical
+        stack.spacing = 14
+        stack.alignment = .fill
+
+        configureSection(securitySection, title: "Encryption", content: stack)
+    }
+
+    private func configureProbabilitySection() {
+        probabilityFieldsStack.axis = .vertical
+        probabilityFieldsStack.spacing = 12
+        probabilityFieldsStack.alignment = .fill
+
+        probabilityFieldsStack.addArrangedSubview(makeProbabilityRow(title: "1-Star Chance", textField: star1Text))
+        probabilityFieldsStack.addArrangedSubview(makeProbabilityRow(title: "2-Star Chance", textField: star2Text))
+        probabilityFieldsStack.addArrangedSubview(makeProbabilityRow(title: "3-Star Chance", textField: star3Text))
+
+        let footnoteLabel = UILabel()
+        footnoteLabel.text = "All three probability values must add up to 100."
+        footnoteLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        footnoteLabel.textColor = UIColor(white: 0.76, alpha: 1.0)
+        footnoteLabel.numberOfLines = 0
+        probabilityFieldsStack.addArrangedSubview(footnoteLabel)
+
+        configureSection(probabilitySection, title: "Random Roll Rates", content: probabilityFieldsStack)
+    }
+
+    private func configureAnimationSection() {
+        gachaAnimationButton.configuration = .tinted()
+        gachaAnimationButton.configuration?.cornerStyle = .large
+        gachaAnimationButton.configuration?.baseBackgroundColor = UIColor(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 0.2)
+        gachaAnimationButton.configuration?.baseForegroundColor = UIColor(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
+        gachaAnimationButton.contentHorizontalAlignment = .leading
+        premiumStatusLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        premiumStatusLabel.textColor = UIColor(white: 0.82, alpha: 1.0)
+        premiumStatusLabel.numberOfLines = 0
+
+        animationStatusStack.axis = .vertical
+        animationStatusStack.spacing = 10
+        animationStatusStack.alignment = .fill
+        animationStatusStack.addArrangedSubview(gachaAnimationButton)
+        animationStatusStack.addArrangedSubview(premiumStatusLabel)
+
+        configureSection(animationSection, title: "Gacha Animation", content: animationStatusStack)
+    }
+
+    private func configureSection(_ sectionView: UIView, title: String, content: UIView) {
+        let titleLabel = makeSectionLabel(title)
+
+        let stack = UIStackView(arrangedSubviews: [titleLabel, content])
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.alignment = .fill
+
+        sectionView.backgroundColor = UIColor(white: 1.0, alpha: 0.06)
+        sectionView.layer.cornerRadius = 16
+        sectionView.translatesAutoresizingMaskIntoConstraints = false
+        sectionView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        sectionView.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: sectionView.layoutMarginsGuide.topAnchor),
+            stack.leadingAnchor.constraint(equalTo: sectionView.layoutMarginsGuide.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: sectionView.layoutMarginsGuide.trailingAnchor),
+            stack.bottomAnchor.constraint(equalTo: sectionView.layoutMarginsGuide.bottomAnchor)
+        ])
+    }
+
+    private func makeSectionLabel(_ title: String) -> UILabel {
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        titleLabel.textColor = UIColor(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
+        return titleLabel
+    }
+
+    private func makeToggleRow(title: String, subtitle: String, toggle: UISwitch) -> UIView {
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        titleLabel.textColor = UIColor(red: 0.262745098, green: 0.7333333333, blue: 0.5294117647, alpha: 1)
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = subtitle
+        subtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        subtitleLabel.textColor = UIColor(white: 0.82, alpha: 1.0)
+        subtitleLabel.numberOfLines = 0
+
+        let labelsStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        labelsStack.axis = .vertical
+        labelsStack.spacing = 4
+        labelsStack.alignment = .fill
+
+        let spacer = UIView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        let row = UIStackView(arrangedSubviews: [labelsStack, spacer, toggle])
+        row.axis = .horizontal
+        row.spacing = 12
+        row.alignment = .center
+        return row
+    }
+
+    private func makeProbabilityRow(title: String, textField: UITextField) -> UIView {
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        titleLabel.textColor = UIColor(white: 0.9, alpha: 1.0)
+
+        let suffixLabel = UILabel()
+        suffixLabel.text = "%"
+        suffixLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        suffixLabel.textColor = UIColor(white: 0.82, alpha: 1.0)
+
+        textField.textAlignment = .right
+        textField.widthAnchor.constraint(equalToConstant: 92).isActive = true
+
+        let row = UIStackView(arrangedSubviews: [titleLabel, UIView(), textField, suffixLabel])
+        row.axis = .horizontal
+        row.spacing = 10
+        row.alignment = .center
+        return row
+    }
+
+    private func updatePasswordVisibility(animated: Bool) {
+        let updates = {
+            self.passwordFieldContainer.isHidden = !self.setPassword.isOn
+            self.passwordText.isHidden = !self.setPassword.isOn
+        }
+
+        guard animated else {
+            updates()
+            return
+        }
+
+        UIView.animate(withDuration: 0.2, animations: updates)
+    }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        activeTextField = textField
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if activeTextField === textField {
+            activeTextField = nil
+        }
+    }
+
+    @objc private func handleKeyboardWillChangeFrame(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrameValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+              let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else {
+            return
+        }
+
+        let keyboardFrame = view.convert(keyboardFrameValue.cgRectValue, from: nil)
+        let overlap = max(0, view.bounds.maxY - keyboardFrame.minY)
+        let bottomInset = max(0, overlap - view.safeAreaInsets.bottom) + 16
+
+        let options = UIView.AnimationOptions(rawValue: curveValue << 16)
+        UIView.animate(withDuration: duration, delay: 0, options: options) {
+            self.formScrollView.contentInset.bottom = bottomInset
+            self.formScrollView.verticalScrollIndicatorInsets.bottom = bottomInset
+            if let activeTextField = self.activeTextField {
+                let visibleRect = activeTextField.convert(activeTextField.bounds, to: self.formScrollView)
+                self.formScrollView.scrollRectToVisible(visibleRect.insetBy(dx: 0, dy: -24), animated: false)
+            }
+        }
+    }
+
+    @objc private func handleKeyboardWillHide(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+              let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else {
+            return
+        }
+
+        let options = UIView.AnimationOptions(rawValue: curveValue << 16)
+        UIView.animate(withDuration: duration, delay: 0, options: options) {
+            self.formScrollView.contentInset.bottom = 0
+            self.formScrollView.verticalScrollIndicatorInsets.bottom = 0
+        }
     }
 
 
